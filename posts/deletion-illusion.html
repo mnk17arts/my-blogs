@@ -1,73 +1,280 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Illusion of Deletion: Why a 50GB File Vanishes in a Split Second — Small Signals</title>
-<meta name="description" content="Why deleting a large file feels instant, how file systems track data, and why deleted bytes can still be recovered until they are overwritten.">
-<link rel="canonical" href="https://mnk17arts.github.io/my-blogs/posts/deletion-illusion.html"><link rel="stylesheet" href="../styles.css"><script defer src="../script.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Illusion of Deletion: Why a 50GB File Vanishes in a Split Second — F.Y.I.</title>
+  <meta name="description" content="Why deleting a large file feels instant, how file systems track data, and why deleted bytes can still be recovered until they are overwritten.">
+  <link rel="canonical" href="https://mnk17arts.github.io/my-blogs/posts/deletion-illusion.html">
+  <link rel="stylesheet" href="../styles.css">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('fyi_theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <script defer src="../script.js"></script>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to content</a>
-<header class="mobile-header"><a class="brand" href="../index.html">Small <span>Signals</span></a><button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button></header>
-<aside class="sidebar" id="site-nav"><a class="brand desktop-brand" href="../index.html">Small <span>Signals</span></a><p class="tagline">A quiet place to understand interesting things.</p><nav aria-label="Primary navigation"><a class="nav-link" href="../index.html">Home</a><a class="nav-link" href="../about.html">About</a><p class="nav-label">Sections</p><a class="nav-link" href="ambient-iot.html">Emerging technology</a><a class="nav-link active" href="deletion-illusion.html">Systems</a><a class="nav-link" href="../index.html#reading-list">Reading list</a></nav><div class="sidebar-footer"><span>Written by</span><strong>mnk17arts</strong></div></aside>
-<main id="main-content" class="content-wrap narrow"><article class="post"><div class="card-meta"><span>Systems</span><span>18 August 2026 &middot; 10 min read</span></div>
-<h1>The Illusion of Deletion: Why a 50GB File Vanishes in a Split Second</h1>
-<p class="lead">Deleting a huge file feels instant because the computer is not erasing the data. It is removing the map that tells the operating system where those bytes live.</p>
-<p>Have you ever noticed how your computer behaves like an over-enthusiastic, slightly lazy magician when you delete a massive file? You spend an hour downloading a 50GB video, decide it is time to clean up, and hit <strong>Delete</strong>. Poof. It is gone in less than a second.</p>
-<p>That feels impossible. Writing 50 gigabytes took real effort. Moving all those bits onto the drive required a sustained transfer, system coordination, and a bit of patience. Yet the deletion is a lightning-fast act of bookkeeping.</p>
-<p>As a classic forum user once joked, it took hours to make the food but only seconds to throw it in the trash. The same is true in storage: the computer is not throwing away the food. It is throwing away the recipe card, deciding the kitchen is empty, and moving on.</p>
-<h2>What on Earth is a file anyway?</h2>
-<p>At the physical level, a drive is just a huge landscape of ones and zeros. There are no folders, no files, and no “video clips” on the silicon or magnetic platters. There is only raw binary storage.</p>
-<p>A file is a logical layer created by the operating system to organize those bytes into something human-readable, like <em>report.docx</em> or <em>cat_video.mp4</em>. To keep track of where the data lives, the system maintains a file system index. Think of it as the library catalog: it knows the file name, size, permissions, timestamps, and the physical addresses of the data blocks where the bytes are stored.</p>
-<p>In simple terms, the file system has two important parts:</p>
-<ul>
-  <li><strong>The index or metadata table:</strong> the catalog that tells the OS what exists and where it lives.</li>
-  <li><strong>The data area:</strong> the blocks or sectors where the raw bytes are actually stored.</li>
-</ul>
-<p>When the operating system creates or writes a file, it allocates space and updates the metadata. When it deletes the file, it usually does not wipe the data itself. It removes the pointer from the metadata table and marks the blocks as free.</p>
-<h2>The great deletion shortcut</h2>
-<p>If a computer actually scrubbed every block of a 50GB file before declaring it deleted, deleting it would take roughly as long as writing it. Your system would freeze while it zeroed out millions of storage sectors.</p>
-<p>Instead, operating systems use a shortcut that is both efficient and a little deceptive: <strong>they edit the index.</strong></p>
-<p>Deleting a file usually happens like this:</p>
-<ol>
-  <li>The OS finds the file’s entry in the metadata table.</li>
-  <li>It removes the reference linking the filename to the physical blocks.</li>
-  <li>It marks those blocks as available for reuse.</li>
-</ol>
-<p>The data is still sitting on the drive untouched. It has not been wiped, moved, or overwritten. It simply becomes unreachable from the file system’s point of view. The next time the computer writes a new file, it is allowed to reuse those free blocks, at which point the old data becomes overwritten by the new one.</p>
-<p>This is why deletion is so fast. The system is not erasing 50GB of content. It is discarding the directory entry and updating a few allocation records.</p>
-<p>Imagine a library. You do not burn the books you want to get rid of. You rip up the catalog card, and suddenly the librarian treats those shelves as vacant. The books are still physically there until new ones are stacked in the same place.</p>
-<p>That is the core idea of the “illusion of deletion.”</p>
-<h2>Why a giant file disappears instantly, but thousands of tiny files take forever</h2>
-<p>Here is the curious part: deleting one large file is fast, but deleting thousands of small files can take much longer, even though the raw data may be the same size.</p>
-<p>Why? Because the cost is not in the bytes. It is in the metadata.</p>
-<p>For one large file, there is only one index record to find and update. For 10,000 tiny files, the operating system has to search, open, alter, and close 10,000 separate entries. It also has to work through permissions, directories, explorer refreshes, and progress bookkeeping.</p>
-<p>The analogy is simple:</p>
-<ul>
-  <li>Popping one giant balloon is one action.</li>
-  <li>Popping 30,000 tiny balloons is a huge number of individual actions, even if the total amount of air is roughly the same.</li>
-</ul>
-<p>In other words, deleting many small files means updating many ledger entries. The overhead can dominate the operation, even when the actual data blocks are not being wiped.</p>
-<h2>Why SSDs changed the rules</h2>
-<p>Traditional hard drives can overwrite data fairly directly. For spinning disks, the idea of deleting a pointer and later reusing the blocks works well. But SSDs introduced a more complicated reality.</p>
-<p>SSDs use NAND flash memory, which has an important limitation: <strong>it cannot erase individual bytes directly.</strong> Flash writes happen in pages, while erases happen in larger blocks. A page must be empty before it can be rewritten, and the drive often needs to move data around during background cleanup.</p>
-<p>Without some help, the SSD would not know which pages are truly unusable. That is where <strong>TRIM</strong> comes in.</p>
-<p>When you delete a file, the operating system can send a TRIM command to the SSD controller. This tells the drive: “These logical blocks are no longer needed.” The SSD can then ignore those pages during garbage collection and erase the surrounding block more efficiently.</p>
-<p>TRIM reduces write amplification, helps keep performance healthy, and avoids unnecessary copying of deleted data. In practical terms, it is one of the reasons SSDs feel so smooth and fast even under heavy use.</p>
-<h2>Deletion is not the same as destruction</h2>
-<p>Because a standard delete is usually just a metadata update, the deleted bytes are not necessarily destroyed. They remain on the drive until overwritten. That is why digital forensics and file recovery tools can often reconstruct deleted files if they have not yet been replaced.</p>
-<p>To recover deleted data, investigators generally bypass the file system’s index and read the raw blocks directly, looking for recognizable patterns such as file headers and content signatures. If those blocks are still intact, the deleted material may be recovered in full.</p>
-<p>This distinction matters. A delete is a <em>logical removal</em>, not a physical erasure. The file is no longer visible to normal software, but the bytes can still be there.</p>
-<p>That is also why secure erasure and cryptographic erasure are different things. Zeroing a drive, securely wiping free space, or destroying the encryption key can make old data much harder to recover. But a normal delete normally does not.</p>
-<h2>My takeaway</h2>
-<p>The instant disappearance of a 50GB file is not a miracle. It is a bookkeeping trick. The operating system removes the pointer, flags the blocks as free, and moves on. The data is still physically there until something else writes over it.</p>
-<p>That is why file deletion feels like magic but behaves like a quiet, lazy index update. The real work of storage is not in the delete itself. The real work is in the system’s ability to remember, track, and eventually reuse the space without panicking.</p>
-<div class="sources"><h2>Sources for further reading</h2><ul>
-  <li><a href="https://en.wikipedia.org/wiki/File_system" rel="noopener">Wikipedia: File system</a></li>
-  <li><a href="https://en.wikipedia.org/wiki/Trim_(computing)" rel="noopener">Wikipedia: TRIM</a></li>
-  <li><a href="https://en.wikipedia.org/wiki/Flash_memory" rel="noopener">Wikipedia: Flash memory</a></li>
-  <li><a href="https://www.nist.gov/itl/ssd" rel="noopener">NIST: Guidance on sanitizing storage media</a></li>
-  <li><a href="https://en.wikipedia.org/wiki/Data_remanence" rel="noopener">Wikipedia: Data remanence</a></li>
-</ul></div>
-</article><footer class="site-footer"><span>&copy; 2026 mnk17arts</span><a href="../index.html">Back home</a></footer></main>
-</body></html>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="mobile-header">
+    <a class="brand" href="../index.html">F.Y.I. <span>Tech</span></a>
+    <div class="mobile-header-actions">
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    </div>
+  </header>
+  <aside class="sidebar" id="site-nav">
+    <a class="brand desktop-brand" href="../index.html">F.Y.I. <span>Tech</span></a>
+    <p class="tagline">For your information — and future intelligence.</p>
+    <nav aria-label="Primary navigation">
+      <a class="nav-link" href="../index.html">Home</a>
+      <a class="nav-link" href="../about.html">About</a>
+      <p class="nav-label">Sections</p>
+      <div id="nav-sections">
+        <a class="nav-link active" href="deletion-illusion.html"><span>Systems</span><span class="nav-count">1</span></a>
+        <a class="nav-link" href="ambient-iot.html"><span>Emerging technology</span><span class="nav-count">1</span></a>
+      </div>
+      <a class="nav-link" href="../index.html#reading-list">Reading list</a>
+    </nav>
+
+    <div class="theme-toggle-row">
+      <span class="theme-toggle-label">Appearance</span>
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <span>Written by</span>
+      <strong>mnk17arts</strong>
+    </div>
+  </aside>
+
+  <main id="main-content" class="content-wrap narrow">
+    <article class="post">
+      <div class="card-meta">
+        <span>Systems</span>
+        <span>18 August 2026 &middot; 10 min read</span>
+      </div>
+      <h1>The Illusion of Deletion: Why a 50GB File Vanishes in a Split Second</h1>
+
+      <!-- Article Toolbar: Audio Reader & Share -->
+      <div class="article-toolbar">
+        <div class="audio-group" id="audio-group">
+          <button class="audio-play-btn" id="audio-play-btn" aria-label="Listen to this note">
+            <svg class="icon-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            <span id="audio-label">Listen (10 min)</span>
+          </button>
+          <div class="audio-controls" id="audio-controls">
+            <button class="audio-speed-btn" id="audio-speed-btn" title="Playback speed">1.0x</button>
+            <button class="audio-stop-btn" id="audio-stop-btn" title="Stop audio" aria-label="Stop audio">
+              <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"></rect></svg>
+            </button>
+            <span class="audio-status" id="audio-status">Playing...</span>
+          </div>
+        </div>
+        <div class="share-group">
+          <button class="share-btn" id="share-copy-btn" title="Copy link" aria-label="Share note">
+            <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            <span>Share</span>
+          </button>
+          <a class="share-icon-btn" id="share-x-btn" target="_blank" rel="noopener" title="Share on X" aria-label="Share on X">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+          </a>
+          <a class="share-icon-btn" id="share-li-btn" target="_blank" rel="noopener" title="Share on LinkedIn" aria-label="Share on LinkedIn">
+            <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
+          <div class="share-toast" id="share-toast">Link copied!</div>
+        </div>
+      </div>
+
+      <p class="lead">
+        Deleting a huge file feels instant because the computer is not erasing the data. It is removing the map that tells the operating system where those bytes live.
+      </p>
+
+      <p>
+        Have you ever noticed how your computer behaves like an over-enthusiastic, slightly lazy magician when you delete a massive file? You spend an hour downloading a 50GB video, decide it is time to clean up, and hit <strong>Delete</strong>. Poof. It is gone in less than a second.
+      </p>
+
+      <p>
+        That feels impossible. Writing 50 gigabytes took real effort. Moving all those bits onto the drive required a sustained transfer, system coordination, and a bit of patience. Yet the deletion is a lightning-fast act of bookkeeping.
+      </p>
+
+      <p>
+        As a classic forum user once joked, it took hours to make the food but only seconds to throw it in the trash. The same is true in storage: the computer is not throwing away the food. It is throwing away the recipe card, deciding the kitchen is empty, and moving on.
+      </p>
+
+      <h2>What on Earth is a file anyway?</h2>
+      <p>
+        At the physical level, a drive is just a huge landscape of ones and zeros. There are no folders, no files, and no “video clips” on the silicon or magnetic platters. There is only raw binary storage.
+      </p>
+
+      <p>
+        A file is a logical layer created by the operating system to organize those bytes into something human-readable, like <em>report.docx</em> or <em>cat_video.mp4</em>. To keep track of where the data lives, the system maintains a file system index. Think of it as the library catalog: it knows the file name, size, permissions, timestamps, and the physical addresses of the data blocks where the bytes are stored.
+      </p>
+
+      <!-- SVG Diagram: Deletion Architecture -->
+      <figure class="post-diagram" aria-labelledby="deletion-diagram-caption">
+        <svg viewBox="0 0 760 250" role="img" aria-label="Diagram showing metadata pointer removal vs physical storage blocks">
+          <defs>
+            <marker id="del-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#2c6e57"/>
+            </marker>
+          </defs>
+          <!-- Metadata Table -->
+          <rect x="25" y="45" width="225" height="160" rx="10" class="diagram-box diagram-focus"/>
+          <text x="137" y="78" text-anchor="middle" class="diagram-title">File System Index</text>
+          <text x="137" y="105" text-anchor="middle" class="diagram-label">Inode / MFT Record</text>
+          <rect x="45" y="125" width="185" height="55" rx="6" fill="#ffffff" stroke="#2c6e57" stroke-dasharray="3 3"/>
+          <text x="137" y="147" text-anchor="middle" font-size="12" fill="#c0392b" font-weight="700">Pointer: [DELETED]</text>
+          <text x="137" y="167" text-anchor="middle" font-size="11" fill="#68736d">Status: Block Flag &rarr; Free</text>
+
+          <!-- Middle Action Indicator -->
+          <path d="M 255 125 H 335" stroke="#2c6e57" stroke-width="2" marker-end="url(#del-arrow)"/>
+          <text x="295" y="112" text-anchor="middle" class="diagram-note">Unlinks map</text>
+          <text x="295" y="145" text-anchor="middle" font-size="10" fill="#68736d">&lt; 1 ms</text>
+
+          <!-- Physical Blocks Area -->
+          <rect x="345" y="45" width="385" height="160" rx="10" class="diagram-box"/>
+          <text x="537" y="78" text-anchor="middle" class="diagram-title">Physical Flash / Magnetic Sectors</text>
+          <text x="537" y="102" text-anchor="middle" class="diagram-label">Blocks 10,240 &ndash; 13,312 (50 GB raw payload)</text>
+
+          <!-- Raw block grid preview -->
+          <g transform="translate(370, 118)">
+            <rect x="0" y="0" width="70" height="42" rx="4" fill="#eaf1ed" stroke="#b9ccc1"/>
+            <text x="35" y="26" text-anchor="middle" font-size="11" fill="#1e2825">01101...</text>
+            <rect x="80" y="0" width="70" height="42" rx="4" fill="#eaf1ed" stroke="#b9ccc1"/>
+            <text x="115" y="26" text-anchor="middle" font-size="11" fill="#1e2825">11010...</text>
+            <rect x="160" y="0" width="70" height="42" rx="4" fill="#eaf1ed" stroke="#b9ccc1"/>
+            <text x="195" y="26" text-anchor="middle" font-size="11" fill="#1e2825">00111...</text>
+            <rect x="240" y="0" width="90" height="42" rx="4" fill="#fdf2e9" stroke="#d6892e"/>
+            <text x="285" y="22" text-anchor="middle" font-size="10" fill="#d6892e" font-weight="700">Intact Bytes</text>
+            <text x="285" y="35" text-anchor="middle" font-size="9" fill="#68736d">Not wiped!</text>
+          </g>
+          <text x="537" y="190" text-anchor="middle" font-size="11" fill="#68736d">Physical bits remain unchanged until future writes overwrite them.</text>
+        </svg>
+        <figcaption id="deletion-diagram-caption">Figure 1: Deletion is a metadata transaction. The pointer is severed in milliseconds, leaving raw payload blocks intact.</figcaption>
+      </figure>
+
+      <aside class="callout-box info" aria-label="Key Concept">
+        <div class="callout-title">The Two Halves of Storage</div>
+        <p><strong>The Index Table:</strong> the catalog that tells the OS what exists and where it lives.<br>
+        <strong>The Data Blocks:</strong> the physical sectors where the raw bytes actually reside. A delete touches only the index table.</p>
+      </aside>
+
+      <h2>The great deletion shortcut</h2>
+      <p>
+        If a computer actually scrubbed every block of a 50GB file before declaring it deleted, deleting it would take roughly as long as writing it. Your system would freeze while it zeroed out millions of storage sectors.
+      </p>
+
+      <p>
+        Instead, operating systems use a shortcut that is both efficient and a little deceptive: <strong>they edit the index.</strong>
+      </p>
+
+      <ol>
+        <li>The OS finds the file’s entry in the metadata table (such as an Inode in ext4/APFS or Master File Table in NTFS).</li>
+        <li>It severs the reference linking the filename to the physical data blocks.</li>
+        <li>It marks those block addresses as available for subsequent reuse in its allocation bitmap.</li>
+      </ol>
+
+      <p>
+        The data is still sitting on the drive untouched. It has not been wiped, moved, or overwritten. It simply becomes unreachable from the file system’s point of view. The next time the computer writes a new file, it is allowed to reuse those free blocks, at which point the old data becomes overwritten by the new one.
+      </p>
+
+      <h2>Why one 50GB file vanishes faster than 10,000 tiny files</h2>
+      <p>
+        Here is the curious paradox: deleting one 50GB file is near-instantaneous, but deleting 10,000 small files totaling just 500MB can bring your file explorer to a crawl.
+      </p>
+      <p>
+        Why? Because the cost of deletion is not determined by the size of the payload; it is determined by <strong>metadata transaction overhead</strong>:
+      </p>
+
+      <ul>
+        <li><strong>One large file:</strong> 1 metadata lookup, 1 directory unlinking, and marking a contiguous range of blocks as free in the bitmap. Total operations: ~3.</li>
+        <li><strong>10,000 small files:</strong> 10,000 metadata lookups, 10,000 journal writes, 10,000 directory tree modifications, permission re-evaluations, and thousands of UI notifications.</li>
+      </ul>
+
+      <aside class="callout-box quote" aria-label="Analogy">
+        <div class="callout-title">The Balloon Analogy</div>
+        <p>Popping one giant hot air balloon is a single puncture. Popping 10,000 tiny party balloons takes 10,000 distinct punctures, even if the total volume of air is identical.</p>
+      </aside>
+
+      <h2>How SSDs and TRIM changed the rules</h2>
+      <p>
+        Traditional magnetic hard drives (HDDs) can overwrite old magnetic tracks directly in place. But Solid State Drives (SSDs) use NAND flash memory, which has a fundamental physical quirk: <strong>flash memory can write in pages (4KB&ndash;16KB), but can only erase in blocks (2MB&ndash;8MB).</strong>
+      </p>
+
+      <p>
+        Because a drive controller cannot rewrite a page without erasing the entire block around it, SSDs rely on the <strong>TRIM</strong> command:
+      </p>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Storage Type</th>
+              <th>How Delete Operates</th>
+              <th>Garbage Collection &amp; Wear</th>
+              <th>Recovery Feasibility</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>HDD (Spinning Disk)</strong></td>
+              <td>Index pointer unlinked; platter magnetic polarity unaltered.</td>
+              <td>No internal garbage collection needed; overwrites directly on write.</td>
+              <td>High: Bytes remain recoverable indefinitely until overwritten.</td>
+            </tr>
+            <tr>
+              <td><strong>SSD (with TRIM enabled)</strong></td>
+              <td>OS unlinks index and sends <code>TRIM</code> instruction to drive controller.</td>
+              <td>Controller ignores trimmed pages during background block compaction/sweeping.</td>
+              <td>Low/Zero: Drive controller returns zeroes immediately upon read of trimmed addresses.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <aside class="callout-box warning" aria-label="Security Warning">
+        <div class="callout-title">Security Insight: Logical Delete &ne; Physical Destruction</div>
+        <p>A standard delete is a logical removal. If you sell or dispose of a drive without cryptographic erasure or full zero-wipe, recovery tools can scan raw blocks and reconstruct private documents with ease.</p>
+      </aside>
+
+      <h2>My takeaway</h2>
+      <p>
+        The instant disappearance of a 50GB file is not magic. It is an intentional, elegant bookkeeping abstraction. The operating system removes the pointer, flags the blocks as available, and carries on. The physical reality only catches up when new information demands that physical space.
+      </p>
+      <p>
+        Computing is filled with these quiet sleights of hand: systems creating the sensation of instant physical work by simply reorganizing their logical maps.
+      </p>
+
+      <div class="sources">
+        <h2>Sources for further reading</h2>
+        <ul>
+          <li><a href="https://en.wikipedia.org/wiki/File_system" rel="noopener" target="_blank">Wikipedia: File System Architecture &amp; Inodes</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Trim_(computing)" rel="noopener" target="_blank">Wikipedia: TRIM Specification &amp; ATA Protocol</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Flash_memory" rel="noopener" target="_blank">Wikipedia: NAND Flash Memory Erase Block Architecture</a></li>
+          <li><a href="https://www.nist.gov/itl/ssd" rel="noopener" target="_blank">NIST SP 800-88: Guidelines for Media Sanitization</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Data_remanence" rel="noopener" target="_blank">Wikipedia: Data Remanence &amp; Forensic Carving</a></li>
+        </ul>
+      </div>
+    </article>
+
+    <footer class="site-footer">
+      <span>&copy; 2026 mnk17arts</span>
+      <a href="../index.html">Back home</a>
+    </footer>
+  </main>
+</body>
+</html>

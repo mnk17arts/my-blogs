@@ -3,28 +3,58 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Small Signals — Notes on technology, ideas, and the future</title>
-  <meta name="description" content="Small Signals is a personal blog about technology, emerging ideas, and the things worth understanding slowly.">
+  <title>F.Y.I. — Notes on technology, systems, and ideas</title>
+  <meta name="description" content="F.Y.I. is a personal publication about software systems, emerging technology, and the concepts worth understanding slowly.">
   <link rel="canonical" href="https://mnk17arts.github.io/my-blogs/">
   <link rel="stylesheet" href="styles.css">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('fyi_theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
   <script defer src="script.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
   <header class="mobile-header">
-    <a class="brand" href="index.html">Small <span>Signals</span></a>
-    <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <a class="brand" href="index.html">F.Y.I. <span>Tech</span></a>
+    <div class="mobile-header-actions">
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    </div>
   </header>
+
   <aside class="sidebar" id="site-nav">
-    <a class="brand desktop-brand" href="index.html">Small <span>Signals</span></a>
-    <p class="tagline">A quiet place to understand interesting things.</p>
+    <a class="brand desktop-brand" href="index.html">F.Y.I. <span>Tech</span></a>
+    <p class="tagline">For your information — and future intelligence.</p>
     <nav aria-label="Primary navigation">
       <a class="nav-link active" href="index.html">Home</a>
       <a class="nav-link" href="about.html">About</a>
       <p class="nav-label">Sections</p>
-      <a class="nav-link" href="posts/ambient-iot.html">Emerging technology</a>
-      <a class="nav-link" href="index.html#reading-list">Reading list</a>
+      <div id="nav-sections">
+        <a class="nav-link" href="posts/deletion-illusion.html"><span>Systems</span><span class="nav-count">1</span></a>
+        <a class="nav-link" href="posts/ambient-iot.html"><span>Emerging technology</span><span class="nav-count">1</span></a>
+      </div>
+      <a class="nav-link" href="#reading-list">Reading list</a>
     </nav>
+
+    <div class="theme-toggle-row">
+      <span class="theme-toggle-label">Appearance</span>
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+    </div>
+
     <div class="sidebar-footer"><span>Written by</span><strong>mnk17arts</strong></div>
   </aside>
 
@@ -32,27 +62,32 @@
     <section class="hero" aria-labelledby="intro-title">
       <p class="eyebrow">One idea at a time</p>
       <h1 id="intro-title">Curiosity, made clearer.</h1>
-      <p class="hero-copy">Short, researched notes on technology and the ideas shaping the world around us. New posts arrive when there is something worth understanding.</p>
+      <p class="hero-copy">Short, researched notes on technology and the systems shaping the world around us. New notes arrive when there is something worth understanding.</p>
     </section>
 
     <section class="section-block" aria-labelledby="latest-title">
       <div class="section-heading"><p class="eyebrow">Start here</p><h2 id="latest-title">Latest note</h2></div>
-      <article class="featured-card">
-        <div class="card-meta"><span>Systems</span><span>10 min read</span></div>
-        <h3><a href="posts/deletion-illusion.html">The Illusion of Deletion: Why a 50GB File Vanishes in a Split Second</a></h3>
-        <p>Deleting a large file feels instant because the computer does not erase the data—it removes the map that says where it lives.</p>
-        <a class="text-link" href="posts/deletion-illusion.html">Read the note <span aria-hidden="true">?</span></a>
-      </article>
+      <div id="latest-note-container">
+        <article class="featured-card">
+          <div class="card-meta"><span>Systems</span><span>10 min read</span></div>
+          <h3><a href="posts/deletion-illusion.html">The Illusion of Deletion: Why a 50GB File Vanishes in a Split Second</a></h3>
+          <p>Deleting a large file feels instant because the computer does not erase the data—it removes the map that says where it lives.</p>
+          <a class="text-link" href="posts/deletion-illusion.html">Read the note <span aria-hidden="true">&rarr;</span></a>
+        </article>
+      </div>
     </section>
 
     <section class="section-block" aria-labelledby="recent-title">
       <div class="section-heading"><p class="eyebrow">Also in the archive</p><h2 id="recent-title">Recent notes</h2></div>
-      <article class="featured-card">
-        <div class="card-meta"><span>Emerging technology</span><span>10 min read</span></div>
-        <h3><a href="posts/ambient-iot.html">The Invisible Engine: How Ambient IoT Could Power a Trillion-Device World</a></h3>
-        <p>How tiny, energy-harvesting sensors and backscatter could connect everyday objects without a conventional battery.</p>
-        <a class="text-link" href="posts/ambient-iot.html">Read the note <span aria-hidden="true">?</span></a>
-      </article>
+      <div id="category-filters" class="category-pills"></div>
+      <div id="recent-notes-container" class="recent-cards-list">
+        <article class="featured-card">
+          <div class="card-meta"><span>Emerging technology</span><span>10 min read</span></div>
+          <h3><a href="posts/ambient-iot.html">The Invisible Engine: How Ambient IoT Could Power a Trillion-Device World</a></h3>
+          <p>How tiny, energy-harvesting sensors and backscatter could connect everyday objects without a conventional battery.</p>
+          <a class="text-link" href="posts/ambient-iot.html">Read the note <span aria-hidden="true">&rarr;</span></a>
+        </article>
+      </div>
     </section>
 
     <section class="section-block" id="reading-list" aria-labelledby="archive-title">
@@ -64,4 +99,3 @@
   </main>
 </body>
 </html>
-

@@ -1,16 +1,83 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>About — Small Signals</title>
-  <meta name="description" content="About Small Signals, a personal blog for learning through research and writing.">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About — F.Y.I.</title>
+  <meta name="description" content="About F.Y.I., a personal publication for understanding technology and systems through research and writing.">
   <link rel="canonical" href="https://mnk17arts.github.io/my-blogs/about.html">
-  <link rel="stylesheet" href="styles.css"><script defer src="script.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('fyi_theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <script defer src="script.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
-  <header class="mobile-header"><a class="brand" href="index.html">Small <span>Signals</span></a><button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button></header>
-  <aside class="sidebar" id="site-nav"><a class="brand desktop-brand" href="index.html">Small <span>Signals</span></a><p class="tagline">A quiet place to understand interesting things.</p><nav aria-label="Primary navigation"><a class="nav-link" href="index.html">Home</a><a class="nav-link active" href="about.html">About</a><p class="nav-label">Sections</p><a class="nav-link" href="posts/ambient-iot.html">Emerging technology</a><a class="nav-link" href="index.html#reading-list">Reading list</a></nav><div class="sidebar-footer"><span>Written by</span><strong>mnk17arts</strong></div></aside>
-  <main id="main-content" class="content-wrap narrow"><article class="page-article"><p class="eyebrow">About the project</p><h1>A blog for learning in public.</h1><p class="lead">I started Small Signals because writing is one of the best ways to find out what I actually understand.</p><p>Every post begins with a question I find interesting. I read primary sources and credible reporting, take notes, and turn the result into a clear, useful explanation. The goal is not to sound certain about everything—it is to make difficult ideas easier to approach.</p><h2>What you can expect</h2><ul><li>One focused idea per post.</li><li>Plain language, with important nuance kept intact.</li><li>Links to sources so you can continue exploring.</li><li>A steady archive built one note at a time.</li></ul><p>If a topic makes you pause and think, it probably belongs here.</p></article><footer class="site-footer"><span>&copy; 2026 mnk17arts</span><a href="index.html">Back home</a></footer></main>
+  <header class="mobile-header">
+    <a class="brand" href="index.html">F.Y.I. <span>Tech</span></a>
+    <div class="mobile-header-actions">
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="site-nav">
+    <a class="brand desktop-brand" href="index.html">F.Y.I. <span>Tech</span></a>
+    <p class="tagline">For your information — and future intelligence.</p>
+    <nav aria-label="Primary navigation">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link active" href="about.html">About</a>
+      <p class="nav-label">Sections</p>
+      <div id="nav-sections">
+        <a class="nav-link" href="posts/deletion-illusion.html"><span>Systems</span><span class="nav-count">1</span></a>
+        <a class="nav-link" href="posts/ambient-iot.html"><span>Emerging technology</span><span class="nav-count">1</span></a>
+      </div>
+      <a class="nav-link" href="index.html#reading-list">Reading list</a>
+    </nav>
+
+    <div class="theme-toggle-row">
+      <span class="theme-toggle-label">Appearance</span>
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+    </div>
+
+    <div class="sidebar-footer"><span>Written by</span><strong>mnk17arts</strong></div>
+  </aside>
+
+  <main id="main-content" class="content-wrap narrow">
+    <article class="page-article">
+      <p class="eyebrow">About the publication</p>
+      <h1>A publication for learning in public.</h1>
+      <p class="lead">I started F.Y.I. because writing is one of the clearest ways to discover what I genuinely understand.</p>
+      <p>Every note begins with a question I find interesting. I read primary sources, technical specifications, and research papers, take notes, and turn the result into a clear, grounded explanation. The goal is not to sound certain about everything—it is to make difficult concepts approachable without stripping away essential nuance.</p>
+      <h2>What you can expect</h2>
+      <ul>
+        <li><strong>One focused idea per post:</strong> deep coverage of a single concept, system invariant, or emerging architecture.</li>
+        <li><strong>Rich visual explanations:</strong> custom SVG diagrams, comparison models, and callouts rather than walls of text.</li>
+        <li><strong>Plain language:</strong> direct, engaging prose that respects technical rigor.</li>
+        <li><strong>Primary citations:</strong> direct links to standards (3GPP, IEEE, NIST, RFCs) and papers so you can verify and explore further.</li>
+        <li><strong>A steady archive:</strong> built one thoughtful note at a time without artificial publishing pressure.</li>
+      </ul>
+      <p>If a concept makes you pause and think, it belongs here.</p>
+    </article>
+    <footer class="site-footer">
+      <span>&copy; 2026 mnk17arts</span>
+      <a href="index.html">Back home</a>
+    </footer>
+  </main>
 </body>
 </html>

@@ -1,45 +1,50 @@
-# Small Signals
+# F.Y.I. (Tech)
 
-Small Signals is a personal blog where I write about technology, ideas, and the topics that catch my attention and make me want to understand them more deeply.
+> *"For your information — and future intelligence."*
 
-This project started from a simple interest: I was reading about Ambient IoT and found the idea fascinating. It was one of those technologies that feels quietly important — not because it is flashy, but because it changes how physical objects might interact with the digital world in the future.
+F.Y.I. is a personal publication dedicated to deconstructing software systems, computer architecture, and emerging technologies from first principles.
 
-That sparked the idea for this blog: not a content machine, but a space to explore interesting topics in a thoughtful, readable way.
+This project started from a simple interest: reading about Ambient IoT and noticing how quietly transformative energy-harvesting devices could be. That sparked the idea for this publication: not a noisy content machine, but a quiet, high-clarity space to explore interesting concepts with depth, visual models, and zero hype.
 
-## What this project is
+---
 
-Small Signals is a place for:
+## What this publication is
 
-- short, research-informed notes
-- ideas worth slowing down for
-- technology topics that are emerging, practical, or quietly transformative
-- writing that helps me understand something before I try to explain it
+F.Y.I. is a home for:
 
-The goal is not to publish constantly or chase a rigid schedule. The goal is to write when something is genuinely worth understanding and when there is enough clarity to turn it into a useful note.
+- **Research-informed notes:** grounded in official specifications (3GPP, IEEE, RFC, NIST) and research papers.
+- **Rich visual media & diagrams:** custom SVG flowcharts, comparison tables, and concept callouts.
+- **Deep systems intuition:** exploring how things actually work beneath operating system abstractions.
+- **Dual themes:** seamless Light and Dark mode with system preference auto-detection.
 
-## Writing philosophy
+---
 
-- One idea at a time
-- Clear explanations over hype
-- A little curiosity goes a long way
-- Research first, writing second
-- Publication happens when the idea is ready
+## Publishing Philosophy
 
-## Publishing rhythm
+- **One idea at a time:** deep exploration of a single invariant or architecture.
+- **Clear explanations over hype:** plain language without stripping essential technical nuance.
+- **Research first, writing second:** verified against primary specifications and code.
+- **Publication when ready:** a thoughtful archive built sustainably, note by note.
 
-This blog is intentionally low-pressure.
+---
 
-I am not aiming for continuous publishing. I will write when I have the time, when a topic interests me enough, and when I feel it is worth turning into a post. That keeps the work thoughtful and sustainable.
+## Project Architecture
 
-## Project structure
+This publication is built as a zero-dependency, static website hosted on GitHub Pages:
 
-- index.html — homepage
-- about.html — project overview
-- styles.css — site styling
-- posts/ — published blog posts
+- `index.html` — homepage feed (dynamically hydrated from `posts.json`)
+- `about.html` — publication manifesto and philosophy
+- `styles.css` — typography tokens, light/dark theme variables, responsive tables, and diagram classes
+- `script.js` — dynamic registry auto-loader, light/dark theme engine, reading progress bar, and mobile drawer
+- `posts.json` — centralized article registry (titles, dates, slugs, categories)
+- `posts/template-post.html` — reference post template with pre-styled callouts, diagrams, and tables
+- `posts/` — published articles
+- `AGENTS.md` — operating handbook for AI agents working in this repository
 
-## Notes
+---
 
-This is a personal project meant to grow gradually. It is not about volume; it is about curiosity, clarity, and learning in public.
+## How to add a new post
 
-If a topic makes me pause and think, it may belong here.
+1. Copy `posts/template-post.html` to `posts/<slug>.html` and write your article.
+2. Register the post by adding an entry to `posts.json`.
+3. `index.html` and sidebar category links across all pages update automatically.

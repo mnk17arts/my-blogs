@@ -1,0 +1,24 @@
+[
+  {
+    "id": "deletion-illusion",
+    "slug": "deletion-illusion",
+    "title": "The Illusion of Deletion: Why a 50GB File Vanishes in a Split Second",
+    "category": "Systems",
+    "date": "18 August 2026",
+    "readTime": "10 min",
+    "excerpt": "Deleting a large file feels instant because the computer does not erase the data—it removes the map that says where it lives.",
+    "url": "posts/deletion-illusion.html",
+    "featured": true
+  },
+  {
+    "id": "ambient-iot",
+    "slug": "ambient-iot",
+    "title": "The Invisible Engine: How Ambient IoT Could Power a Trillion-Device World",
+    "category": "Emerging technology",
+    "date": "31 July 2026",
+    "readTime": "10 min",
+    "excerpt": "How tiny, energy-harvesting sensors and backscatter could connect everyday objects without a conventional battery.",
+    "url": "posts/ambient-iot.html",
+    "featured": false
+  }
+]
