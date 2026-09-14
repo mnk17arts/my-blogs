@@ -1,27 +1,248 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Invisible Engine: How Ambient IoT Could Power a Trillion-Device World — Small Signals</title>
-<meta name="description" content="Ambient IoT explained: how battery-free devices harvest energy, use backscatter, fit into 3GPP standards, and change supply chains, retail, and the physical world.">
-<link rel="canonical" href="https://mnk17arts.github.io/my-blogs/posts/ambient-iot.html"><link rel="stylesheet" href="../styles.css"><script defer src="../script.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Invisible Engine: How Ambient IoT Could Power a Trillion-Device World — F.Y.I.</title>
+  <meta name="description" content="Ambient IoT explained: how battery-free devices harvest energy, use backscatter, fit into 3GPP standards, and change supply chains, retail, and the physical world.">
+  <link rel="canonical" href="https://mnk17arts.github.io/my-blogs/posts/ambient-iot.html">
+  <link rel="stylesheet" href="../styles.css">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('fyi_theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <script defer src="../script.js"></script>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to content</a>
-<header class="mobile-header"><a class="brand" href="../index.html">Small <span>Signals</span></a><button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button></header>
-<aside class="sidebar" id="site-nav"><a class="brand desktop-brand" href="../index.html">Small <span>Signals</span></a><p class="tagline">A quiet place to understand interesting things.</p><nav aria-label="Primary navigation"><a class="nav-link" href="../index.html">Home</a><a class="nav-link" href="../about.html">About</a><p class="nav-label">Sections</p><a class="nav-link active" href="ambient-iot.html">Emerging technology</a><a class="nav-link" href="../index.html#reading-list">Reading list</a></nav><div class="sidebar-footer"><span>Written by</span><strong>mnk17arts</strong></div></aside>
-<main id="main-content" class="content-wrap narrow"><article class="post"><div class="card-meta"><span>Emerging technology</span><span>31 July 2026 &middot; 10 min read</span></div>
-<h1>The Invisible Engine: How Ambient IoT Could Power a Trillion-Device World</h1>
-<p class="lead">The next wave of connected devices may not look like devices at all. They could be labels, packages, shelves, and products that sense their surroundings without a conventional battery.</p>
-<p>Depending on which forecast you read, the world is moving toward tens of billions of connected devices and, in more ambitious industry visions, <em>trillions</em> of connected things. Bluetooth SIG and ABI Research have used a 10-trillion-device horizon to describe that scale. The number is less a precise countdown than a useful provocation: if every carton, medicine pack, tool, or piece of clothing becomes addressable, we cannot power them all by replacing coin cells.</p>
-<p>The easiest way to picture Ambient IoT is to imagine digital dust that wakes up only when the world gives it a little energy. A tag on a box, key, or medicine packet does not act like a tiny smartphone. It borrows power from the air, light, heat, or motion around it, senses something small, and then whispers back by bending an existing radio signal. The object stays ordinary, but a thin layer of intelligence starts living on it.</p>
-<figure class="iot-diagram" aria-labelledby="diagram-caption"><svg viewBox="0 0 760 270" role="img" aria-label="A radio signal powers a small ambient IoT tag, which reflects data to a reader and then to the cloud"><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs><rect x="18" y="74" width="175" height="116" rx="12" class="diagram-box"/><text x="105" y="112" text-anchor="middle" class="diagram-title">Ambient energy</text><text x="105" y="138" text-anchor="middle" class="diagram-label">radio · light · heat</text><text x="105" y="160" text-anchor="middle" class="diagram-label">motion</text><rect x="292" y="54" width="176" height="156" rx="12" class="diagram-box diagram-focus"/><text x="380" y="96" text-anchor="middle" class="diagram-title">Tiny tag</text><text x="380" y="123" text-anchor="middle" class="diagram-label">harvests energy</text><text x="380" y="146" text-anchor="middle" class="diagram-label">senses + stores</text><text x="380" y="169" text-anchor="middle" class="diagram-label">reflects a signal</text><rect x="568" y="74" width="175" height="116" rx="12" class="diagram-box"/><text x="655" y="112" text-anchor="middle" class="diagram-title">Reader / cloud</text><text x="655" y="138" text-anchor="middle" class="diagram-label">decodes data</text><text x="655" y="160" text-anchor="middle" class="diagram-label">acts on insight</text><path d="M 193 132 H 282" class="diagram-arrow" marker-end="url(#arrow)"/><path d="M 478 132 H 558" class="diagram-arrow" marker-end="url(#arrow)"/><text x="238" y="119" text-anchor="middle" class="diagram-note">energy in</text><text x="518" y="119" text-anchor="middle" class="diagram-note">data out</text></svg><figcaption id="diagram-caption">Ambient IoT turns small amounts of environmental energy into occasional, useful data.</figcaption></figure>
-<h2>From shouting to holding up a mirror</h2><p>A normal wireless device actively transmits. It generates a radio signal, amplifies it, and spends a meaningful amount of energy shouting its message into the air. Ambient IoT devices often use <strong>backscatter</strong> instead. A nearby reader supplies a carrier wave; the tag changes the way it reflects that wave, much like holding up a mirror and moving it to encode a message.</p><p>That reflection is not magic and it is not always passive. The tag still needs an antenna, a tiny circuit, a sensor, and enough energy to wake up, measure something, and change its radio behaviour. But the radio does not need to generate a powerful signal from scratch. This is why backscatter can make battery-free or battery-assisted designs practical at very small sizes.</p>
-<h2>Where the energy comes from</h2><p>Energy harvesting means converting a weak, available source into usable electricity. Depending on the setting, a tag might harvest radio-frequency energy from a reader, indoor light through a tiny photovoltaic cell, a temperature difference, or vibration. The supply is variable, so the device may work in short bursts rather than continuously. A postage-stamp-sized <a href="https://www.wiliot.com/product/iot-pixels" rel="noopener">Wiliot IoT Pixel</a>, for example, is designed to harvest nearby radio energy and send small Bluetooth-compatible messages.</p>
-<h2>A rulebook is forming</h2><p>Ambient IoT is not a free-for-all of incompatible stickers. 3GPP is defining a cellular framework for energy-harvesting devices in Release 19. Its current material describes three practical levels: <strong>Type 1</strong>, an ultra-low-power passive device; <strong>Type 2a</strong>, still passive but with additional capability such as reflected-signal amplification; and <strong>Type 2b</strong>, a very-low-cost active device with more energy available. Other documents and industry presentations sometimes label these families A, B, and C, so the names can look inconsistent even when the underlying idea is similar.</p><p>The bigger vision is a seamless <strong>cyber-physical world</strong>: physical objects become observable to software without each one needing a screen, a charger, or a long-lived battery. That makes Ambient IoT a candidate building block for future 6G-era systems, but it is important to separate the vision from what is standardized and deployed today. Release 19 is the rulebook being built now; the ecosystem will take time to mature.</p>
-<h2>What it changes in the real world</h2><ul><li><strong>Retail and supply chains:</strong> In 2025, Wiliot and Walmart announced a large deployment of millions of battery-free IoT Pixels across Walmart's supply chain, with ABI Research reporting a plan to reach 90 million pallets. The point is not to put a GPS tracker on everything. It is to make movement, inventory, and condition visible at a lower maintenance cost.</li><li><strong>Food and medicine:</strong> Case-level tags can help monitor temperature and handling in the cold chain. A strawberry shipment or a box of vaccines does not need a full computer; it needs a trustworthy record of where it has been and whether its conditions crossed a safety threshold.</li><li><strong>Environmental protection:</strong> Tiny, distributed sensors could help detect heat, smoke, moisture, or changes in a forest before a small fire becomes a large one. These deployments still need robust readers and careful maintenance, but battery-free nodes make dense coverage more plausible.</li><li><strong>Consumer objects:</strong> A future “find my everything” service could make keys, wallets, tools, and luggage easier to locate without putting a replaceable battery in every object.</li></ul>
-<h2>The intermittent reality</h2><p>Battery-free does not mean always-on. When harvested energy disappears, the device must stop safely and continue later. This is called <strong>intermittent computing</strong>. Software can break work into small tasks and save its progress—known as checkpointing—in non-volatile memory before the energy buffer runs down. When power returns, the tag resumes instead of starting from zero. Researchers are still working on the trade-off: checkpointing itself costs energy and memory writes, so a clever device must know what is worth saving.</p><p>Security has a similar physical constraint. An attacker might try to keep a device from collecting enough energy to make progress, create repeated wake-ups, or cause many tags to respond at once. These energy and synchronization attacks are a reminder that “tiny” does not mean “low risk.” Authentication, privacy, rate limits, and clear ownership of sensor data need to be designed into the system.</p>
-<h2>My takeaway</h2><p>For decades, our imagination has been limited by the need for a plug or a battery. Ambient IoT loosens that limit. It could make the physical world more measurable, more responsive, and less expensive to maintain—but only where the data is useful and the rules are visible.</p><p>What would you connect if you never had to worry about a power source again?</p>
-<div class="sources"><h2>Sources for further reading</h2><ul><li><a href="https://www.3gpp.org/technologies/rel19-aiot" rel="noopener">3GPP: Release 19 Ambient IoT</a></li><li><a href="https://www.abiresearch.com/market-research/insight/7787010-walmart-goes-full-steam-ahead-on-wiliot-hi" rel="noopener">ABI Research: Walmart and Wiliot deployment</a></li><li><a href="https://www.wiliot.com/product/iot-pixels" rel="noopener">Wiliot: IoT Pixel product details</a></li><li><a href="https://www.gs1.org/standards/epcis" rel="noopener">GS1: EPCIS supply-chain event standard</a></li><li><a href="https://www.microsoft.com/en-us/research/publication/chime-checkpointing-long-computations-on-intermittently-energized-iot-device/" rel="noopener">Microsoft Research: checkpointing in intermittently powered IoT</a></li></ul></div>
-</article><footer class="site-footer"><span>&copy; 2026 mnk17arts</span><a href="../index.html">Back home</a></footer></main>
-</body></html>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="mobile-header">
+    <a class="brand" href="../index.html">F.Y.I. <span>Tech</span></a>
+    <div class="mobile-header-actions">
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    </div>
+  </header>
+  <aside class="sidebar" id="site-nav">
+    <a class="brand desktop-brand" href="../index.html">F.Y.I. <span>Tech</span></a>
+    <p class="tagline">For your information — and future intelligence.</p>
+    <nav aria-label="Primary navigation">
+      <a class="nav-link" href="../index.html">Home</a>
+      <a class="nav-link" href="../about.html">About</a>
+      <p class="nav-label">Sections</p>
+      <div id="nav-sections">
+        <a class="nav-link" href="deletion-illusion.html"><span>Systems</span><span class="nav-count">1</span></a>
+        <a class="nav-link active" href="ambient-iot.html"><span>Emerging technology</span><span class="nav-count">1</span></a>
+      </div>
+      <a class="nav-link" href="../index.html#reading-list">Reading list</a>
+    </nav>
+
+    <div class="theme-toggle-row">
+      <span class="theme-toggle-label">Appearance</span>
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <span>Written by</span>
+      <strong>mnk17arts</strong>
+    </div>
+  </aside>
+
+  <main id="main-content" class="content-wrap narrow">
+    <article class="post">
+      <div class="card-meta">
+        <span>Emerging technology</span>
+        <span>31 July 2026 &middot; 10 min read</span>
+      </div>
+      <h1>The Invisible Engine: How Ambient IoT Could Power a Trillion-Device World</h1>
+
+      <!-- Article Toolbar: Audio Reader & Share -->
+      <div class="article-toolbar">
+        <div class="audio-group" id="audio-group">
+          <button class="audio-play-btn" id="audio-play-btn" aria-label="Listen to this note">
+            <svg class="icon-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            <span id="audio-label">Listen (10 min)</span>
+          </button>
+          <div class="audio-controls" id="audio-controls">
+            <button class="audio-speed-btn" id="audio-speed-btn" title="Playback speed">1.0x</button>
+            <button class="audio-stop-btn" id="audio-stop-btn" title="Stop audio" aria-label="Stop audio">
+              <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"></rect></svg>
+            </button>
+            <span class="audio-status" id="audio-status">Playing...</span>
+          </div>
+        </div>
+        <div class="share-group">
+          <button class="share-btn" id="share-copy-btn" title="Copy link" aria-label="Share note">
+            <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            <span>Share</span>
+          </button>
+          <a class="share-icon-btn" id="share-x-btn" target="_blank" rel="noopener" title="Share on X" aria-label="Share on X">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+          </a>
+          <a class="share-icon-btn" id="share-li-btn" target="_blank" rel="noopener" title="Share on LinkedIn" aria-label="Share on LinkedIn">
+            <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
+          <div class="share-toast" id="share-toast">Link copied!</div>
+        </div>
+      </div>
+
+      <p class="lead">
+        The next wave of connected devices may not look like devices at all. They could be labels, packages, shelves, and products that sense their surroundings without a conventional battery.
+      </p>
+
+      <p>
+        Depending on which forecast you read, the world is moving toward tens of billions of connected devices and, in more ambitious industry visions, <em>trillions</em> of connected things. Bluetooth SIG and ABI Research have used a 10-trillion-device horizon to describe that scale. The number is less a precise countdown than a useful provocation: if every carton, medicine pack, tool, or piece of clothing becomes addressable, we cannot power them all by replacing coin cells.
+      </p>
+
+      <p>
+        The easiest way to picture Ambient IoT is to imagine digital dust that wakes up only when the world gives it a little energy. A tag on a box, key, or medicine packet does not act like a tiny smartphone. It borrows power from the air, light, heat, or motion around it, senses something small, and then whispers back by bending an existing radio signal. The object stays ordinary, but a thin layer of intelligence starts living on it.
+      </p>
+
+      <figure class="post-diagram" aria-labelledby="diagram-caption">
+        <svg viewBox="0 0 760 270" role="img" aria-label="A radio signal powers a small ambient IoT tag, which reflects data to a reader and then to the cloud">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <rect x="18" y="74" width="175" height="116" rx="12" class="diagram-box"/>
+          <text x="105" y="112" text-anchor="middle" class="diagram-title">Ambient energy</text>
+          <text x="105" y="138" text-anchor="middle" class="diagram-label">radio · light · heat</text>
+          <text x="105" y="160" text-anchor="middle" class="diagram-label">motion</text>
+
+          <rect x="292" y="54" width="176" height="156" rx="12" class="diagram-box diagram-focus"/>
+          <text x="380" y="96" text-anchor="middle" class="diagram-title">Tiny tag</text>
+          <text x="380" y="123" text-anchor="middle" class="diagram-label">harvests energy</text>
+          <text x="380" y="146" text-anchor="middle" class="diagram-label">senses + stores</text>
+          <text x="380" y="169" text-anchor="middle" class="diagram-label">reflects a signal</text>
+
+          <rect x="568" y="74" width="175" height="116" rx="12" class="diagram-box"/>
+          <text x="655" y="112" text-anchor="middle" class="diagram-title">Reader / cloud</text>
+          <text x="655" y="138" text-anchor="middle" class="diagram-label">decodes data</text>
+          <text x="655" y="160" text-anchor="middle" class="diagram-label">acts on insight</text>
+
+          <path d="M 193 132 H 282" class="diagram-arrow" marker-end="url(#arrow)" stroke="#2c6e57" stroke-width="2"/>
+          <path d="M 478 132 H 558" class="diagram-arrow" marker-end="url(#arrow)" stroke="#2c6e57" stroke-width="2"/>
+          <text x="238" y="119" text-anchor="middle" class="diagram-note">energy in</text>
+          <text x="518" y="119" text-anchor="middle" class="diagram-note">data out</text>
+        </svg>
+        <figcaption id="diagram-caption">Figure 1: Ambient IoT turns small amounts of environmental energy into occasional, useful data.</figcaption>
+      </figure>
+
+      <h2>From shouting to holding up a mirror</h2>
+      <p>
+        A normal wireless device actively transmits. It generates a radio signal, amplifies it, and spends a meaningful amount of energy shouting its message into the air. Ambient IoT devices often use <strong>backscatter</strong> instead. A nearby reader supplies a carrier wave; the tag changes the way it reflects that wave, much like holding up a mirror and moving it to encode a message.
+      </p>
+
+      <aside class="callout-box info" aria-label="Key Concept">
+        <div class="callout-title">The Backscatter Advantage</div>
+        <p>Generating and transmitting high-frequency RF carrier waves consumes milliwatts. Reflecting an existing ambient wave by modulating an antenna impedance consumes mere microwatts—enabling completely battery-free operation.</p>
+      </aside>
+
+      <p>
+        That reflection is not magic and it is not always passive. The tag still needs an antenna, a tiny circuit, a sensor, and enough energy to wake up, measure something, and change its radio behaviour. But the radio does not need to generate a powerful signal from scratch. This is why backscatter can make battery-free or battery-assisted designs practical at very small sizes.
+      </p>
+
+      <h2>Where the energy comes from</h2>
+      <p>
+        Energy harvesting means converting a weak, available source into usable electricity. Depending on the setting, a tag might harvest radio-frequency energy from a reader, indoor light through a tiny photovoltaic cell, a temperature difference, or vibration. The supply is variable, so the device may work in short bursts rather than continuously. A postage-stamp-sized <a href="https://www.wiliot.com/product/iot-pixels" rel="noopener" target="_blank">Wiliot IoT Pixel</a>, for example, is designed to harvest nearby radio energy and send small Bluetooth-compatible messages.
+      </p>
+
+      <h2>A rulebook is forming: 3GPP Release 19</h2>
+      <p>
+        Ambient IoT is not a free-for-all of incompatible stickers. 3GPP is defining a cellular framework for energy-harvesting devices in Release 19. Its current taxonomy classifies devices based on their energy storage and active transmission capabilities:
+      </p>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Device Class</th>
+              <th>Power Source</th>
+              <th>RF Architecture</th>
+              <th>Primary Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Type 1</strong></td>
+              <td>Pure Energy Harvesting (No battery)</td>
+              <td>Pure passive backscatter reflection</td>
+              <td>Pallets, carton tags, static inventory labels</td>
+            </tr>
+            <tr>
+              <td><strong>Type 2a</strong></td>
+              <td>Harvester + tiny energy buffer (capacitor)</td>
+              <td>Backscatter with active reflected amplification</td>
+              <td>Warehouse aisle tracking, shelf replenishment</td>
+            </tr>
+            <tr>
+              <td><strong>Type 2b</strong></td>
+              <td>Micro-battery assisted / hybrid</td>
+              <td>Active ultra-low-power transmission</td>
+              <td>Cold-chain vaccine monitors, precision sensors</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        The bigger vision is a seamless <strong>cyber-physical world</strong>: physical objects become observable to software without each one needing a screen, a charger, or a long-lived battery. That makes Ambient IoT a candidate building block for future 6G-era systems, but it is important to separate the vision from what is standardized and deployed today. Release 19 is the rulebook being built now; the ecosystem will take time to mature.
+      </p>
+
+      <h2>What it changes in the real world</h2>
+      <ul>
+        <li><strong>Retail and supply chains:</strong> In 2025, Wiliot and Walmart announced a large deployment of millions of battery-free IoT Pixels across Walmart's supply chain, with ABI Research reporting a plan to reach 90 million pallets. The point is not to put a GPS tracker on everything. It is to make movement, inventory, and condition visible at a lower maintenance cost.</li>
+        <li><strong>Food and medicine:</strong> Case-level tags can help monitor temperature and handling in the cold chain. A strawberry shipment or a box of vaccines does not need a full computer; it needs a trustworthy record of where it has been and whether its conditions crossed a safety threshold.</li>
+        <li><strong>Environmental protection:</strong> Tiny, distributed sensors could help detect heat, smoke, moisture, or changes in a forest before a small fire becomes a large one. These deployments still need robust readers and careful maintenance, but battery-free nodes make dense coverage more plausible.</li>
+        <li><strong>Consumer objects:</strong> A future “find my everything” service could make keys, wallets, tools, and luggage easier to locate without putting a replaceable battery in every object.</li>
+      </ul>
+
+      <h2>The intermittent reality</h2>
+      <p>
+        Battery-free does not mean always-on. When harvested energy disappears, the device must stop safely and continue later. This is called <strong>intermittent computing</strong>. Software can break work into small tasks and save its progress—known as checkpointing—in non-volatile memory before the energy buffer runs down. When power returns, the tag resumes instead of starting from zero. Researchers are still working on the trade-off: checkpointing itself costs energy and memory writes, so a clever device must know what is worth saving.
+      </p>
+
+      <aside class="callout-box warning" aria-label="Security Insight">
+        <div class="callout-title">Security & Synchronization Risks</div>
+        <p>An attacker can deliberately deplete energy reserves through repeated wake-up signals or induce denial-of-service by triggering simultaneous reflection storms. Ultra-lightweight cryptography and rate limiting are essential design requirements.</p>
+      </aside>
+
+      <h2>My takeaway</h2>
+      <p>
+        For decades, our imagination has been limited by the need for a plug or a battery. Ambient IoT loosens that limit. It could make the physical world more measurable, more responsive, and less expensive to maintain—but only where the data is useful and the rules are visible.
+      </p>
+      <p>What would you connect if you never had to worry about a power source again?</p>
+
+      <div class="sources">
+        <h2>Sources for further reading</h2>
+        <ul>
+          <li><a href="https://www.3gpp.org/technologies/rel19-aiot" rel="noopener" target="_blank">3GPP: Release 19 Ambient IoT Standards</a></li>
+          <li><a href="https://www.abiresearch.com/market-research/insight/7787010-walmart-goes-full-steam-ahead-on-wiliot-hi" rel="noopener" target="_blank">ABI Research: Walmart and Wiliot deployment analysis</a></li>
+          <li><a href="https://www.wiliot.com/product/iot-pixels" rel="noopener" target="_blank">Wiliot: Battery-free IoT Pixel technical specifications</a></li>
+          <li><a href="https://www.gs1.org/standards/epcis" rel="noopener" target="_blank">GS1: EPCIS supply-chain event standard</a></li>
+          <li><a href="https://www.microsoft.com/en-us/research/publication/chime-checkpointing-long-computations-on-intermittently-energized-iot-device/" rel="noopener" target="_blank">Microsoft Research: Checkpointing in intermittently powered IoT</a></li>
+        </ul>
+      </div>
+    </article>
+
+    <footer class="site-footer">
+      <span>&copy; 2026 mnk17arts</span>
+      <a href="../index.html">Back home</a>
+    </footer>
+  </main>
+</body>
+</html>

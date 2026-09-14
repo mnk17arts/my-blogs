@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Autocomplete That Learned to Think: How an LLM is Actually Built from Scratch — F.Y.I.</title>
+  <meta name="description" content="How turning text into numbers, guessing the next word, and providing an internal scratchpad turns raw statistics into modern reasoning AI.">
+  <link rel="canonical" href="https://mnk17arts.github.io/my-blogs/posts/how-llms-are-built.html">
+  <link rel="stylesheet" href="../styles.css">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('fyi_theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <script defer src="../script.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <a class="brand" href="../index.html">F.Y.I. <span>Tech</span></a>
+    <div class="mobile-header-actions">
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    </div>
+  </header>
+
+  <!-- Sidebar Navigation (Auto-synced via script.js from posts.json) -->
+  <aside class="sidebar" id="site-nav">
+    <a class="brand desktop-brand" href="../index.html">F.Y.I. <span>Tech</span></a>
+    <p class="tagline">For your information — and future intelligence.</p>
+    <nav aria-label="Primary navigation">
+      <a class="nav-link" href="../index.html">Home</a>
+      <a class="nav-link" href="../about.html">About</a>
+      <p class="nav-label">Sections</p>
+      <div id="nav-sections">
+        <a class="nav-link active" href="how-llms-are-built.html"><span>Artificial Intelligence</span><span class="nav-count">1</span></a>
+        <a class="nav-link" href="deletion-illusion.html"><span>Systems</span><span class="nav-count">1</span></a>
+        <a class="nav-link" href="ambient-iot.html"><span>Emerging technology</span><span class="nav-count">1</span></a>
+      </div>
+      <a class="nav-link" href="../index.html#reading-list">Reading list</a>
+    </nav>
+
+    <div class="theme-toggle-row">
+      <span class="theme-toggle-label">Appearance</span>
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <span>Written by</span>
+      <strong>mnk17arts</strong>
+    </div>
+  </aside>
+
+  <!-- Main Article Content -->
+  <main id="main-content" class="content-wrap narrow">
+    <article class="post">
+      <div class="card-meta">
+        <span>Artificial Intelligence</span>
+        <span>15 September 2026 &middot; 12 min read</span>
+      </div>
+
+      <h1>The Autocomplete That Learned to Think: How an LLM is Actually Built from Scratch</h1>
+
+      <!-- Article Toolbar: In-Browser Audio Player & Share Group -->
+      <div class="article-toolbar">
+        <div class="audio-group" id="audio-group">
+          <button class="audio-play-btn" id="audio-play-btn" aria-label="Listen to this note">
+            <svg class="icon-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            <span id="audio-label">Listen (12 min)</span>
+          </button>
+          <div class="audio-controls" id="audio-controls">
+            <button class="audio-speed-btn" id="audio-speed-btn" title="Playback speed">1.0x</button>
+            <button class="audio-stop-btn" id="audio-stop-btn" title="Stop audio" aria-label="Stop audio">
+              <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"></rect></svg>
+            </button>
+            <span class="audio-status" id="audio-status">Playing...</span>
+          </div>
+        </div>
+        <div class="share-group">
+          <button class="share-btn" id="share-copy-btn" title="Copy link" aria-label="Share note">
+            <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            <span>Share</span>
+          </button>
+          <a class="share-icon-btn" id="share-x-btn" target="_blank" rel="noopener" title="Share on X" aria-label="Share on X">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+          </a>
+          <a class="share-icon-btn" id="share-li-btn" target="_blank" rel="noopener" title="Share on LinkedIn" aria-label="Share on LinkedIn">
+            <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
+          <div class="share-toast" id="share-toast">Link copied!</div>
+        </div>
+      </div>
+
+      <p class="lead">
+        When you talk to an AI, it feels like conversing with a conscious entity behind a glass screen. In reality, the entire system is built on a single, repetitive trick: turning words into numbers and guessing what single piece comes next. Here is how that simple mechanism is engineered into modern reasoning intelligence.
+      </p>
+
+      <h2>The illusion in the chat box</h2>
+      <p>
+        If you type a question into ChatGPT, Claude, or DeepSeek, words stream across your display with fluent, authoritative prose. It will write code, translate ancient languages, analyze tax law, and explain quantum physics with effortless confidence.
+      </p>
+      <p>
+        Because of this fluency, our brains naturally project human characteristics onto the software: we imagine an entity that “remembers” who we are, “understands” our feelings, and “thinks” through problems before answering.
+      </p>
+      <p>
+        The mechanical reality is far stranger: <strong>an LLM does not possess a living mind, and it does not remember your conversation once its response is delivered.</strong>
+      </p>
+      <p>
+        At its core, a Large Language Model is the world’s most powerful autocomplete engine. It only ever does one task: it looks at a sequence of words and calculates the probability of what single piece comes next.
+      </p>
+      <p>
+        How did a system designed to guess the next word learn to write poetry, debug software, and reason through complex mathematical proofs? The secret lies in a four-stage training journey that transforms raw internet text into a structured reasoning engine.
+      </p>
+
+      <!-- SVG Pipeline Diagram -->
+      <figure class="post-diagram" aria-labelledby="llm-pipeline-caption">
+        <svg viewBox="0 0 760 260" role="img" aria-label="The 4-stage pipeline from raw text to a reasoning model">
+          <defs>
+            <marker id="flow-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#2c6e57"/>
+            </marker>
+          </defs>
+
+          <!-- Stage 1 -->
+          <rect x="15" y="45" width="165" height="160" rx="10" class="diagram-box"/>
+          <text x="97" y="78" text-anchor="middle" class="diagram-title">1. Pretraining</text>
+          <text x="97" y="105" text-anchor="middle" class="diagram-label">Trillions of words</text>
+          <text x="97" y="128" text-anchor="middle" class="diagram-label">Fill-in-the-blank</text>
+          <rect x="25" y="145" width="145" height="38" rx="6" fill="#eaf1ed" stroke="#b9ccc1"/>
+          <text x="97" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#2c6e57">Base Model</text>
+
+          <path d="M 183 125 H 202" stroke="#2c6e57" stroke-width="2" marker-end="url(#flow-arrow)"/>
+
+          <!-- Stage 2 -->
+          <rect x="204" y="45" width="165" height="160" rx="10" class="diagram-box"/>
+          <text x="286" y="78" text-anchor="middle" class="diagram-title">2. SFT (Manners)</text>
+          <text x="286" y="105" text-anchor="middle" class="diagram-label">Curated Q&amp;A cards</text>
+          <text x="286" y="128" text-anchor="middle" class="diagram-label">Loss masking trick</text>
+          <rect x="214" y="145" width="145" height="38" rx="6" fill="#eaf1ed" stroke="#b9ccc1"/>
+          <text x="286" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#2c6e57">Assistant Model</text>
+
+          <path d="M 372 125 H 391" stroke="#2c6e57" stroke-width="2" marker-end="url(#flow-arrow)"/>
+
+          <!-- Stage 3 -->
+          <rect x="393" y="45" width="165" height="160" rx="10" class="diagram-box"/>
+          <text x="475" y="78" text-anchor="middle" class="diagram-title">3. Alignment (DPO)</text>
+          <text x="475" y="105" text-anchor="middle" class="diagram-label">Thumbs up vs down</text>
+          <text x="475" y="128" text-anchor="middle" class="diagram-label">Coaching tone &amp; safety</text>
+          <rect x="403" y="145" width="145" height="38" rx="6" fill="#eaf1ed" stroke="#b9ccc1"/>
+          <text x="475" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#2c6e57">Polished Chatbot</text>
+
+          <path d="M 561 125 H 580" stroke="#2c6e57" stroke-width="2" marker-end="url(#flow-arrow)"/>
+
+          <!-- Stage 4 -->
+          <rect x="582" y="45" width="165" height="160" rx="10" class="diagram-box diagram-focus"/>
+          <text x="664" y="78" text-anchor="middle" class="diagram-title">4. Reasoning (GRPO)</text>
+          <text x="664" y="105" text-anchor="middle" class="diagram-label">Internal scratchpad</text>
+          <text x="664" y="128" text-anchor="middle" class="diagram-label">&lt;think&gt; verification</text>
+          <rect x="592" y="145" width="145" height="38" rx="6" fill="#2c6e57"/>
+          <text x="664" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">Reasoning Model</text>
+        </svg>
+        <figcaption id="llm-pipeline-caption">Figure 1: The four-stage evolution from raw internet text to a modern reasoning model.</figcaption>
+      </figure>
+
+      <h2>Step 1: The alphabet of numbers (Tokenization)</h2>
+      <p>
+        Computers cannot understand words, letters, or punctuation. A microchip only understands numbers and mathematical operations. Before an AI can process a sentence, the text must be translated into numbers.
+      </p>
+      <p>
+        Imagine giving a child a pair of scissors and asking them to cut a book into recognizable syllables and common words. That is what a <strong>tokenizer</strong> does:
+      </p>
+      <ul>
+        <li>Common words stay whole: <code>"learning"</code> &rarr; <code>[4629]</code></li>
+        <li>Unusual or complex words get sliced into pieces: <code>"antigravity"</code> &rarr; <code>"anti"</code> + <code>"gravity"</code> &rarr; <code>[2958, 20451]</code></li>
+      </ul>
+      <p>
+        Once text is tokenized, a sentence like <em>“Curiosity leads to discovery”</em> becomes a simple list of numbers: <code>[31920, 4821, 284, 11429]</code>. The model never sees letters again—it only sees a mathematical landscape of integers.
+      </p>
+
+      <h2>Step 2: Pretraining — The silent reader in the infinite library</h2>
+      <p>
+        Pretraining is the most expensive and time-consuming phase of creating an LLM. It accounts for more than 85% of the total computing budget.
+      </p>
+      <p>
+        Imagine taking an eager student with a blank slate and locking them in a vast library containing trillions of words: Wikipedia, textbooks, open-source code repositories, news archives, and public internet discussions.
+      </p>
+      <p>
+        The student is given a single, never-ending exercise:
+      </p>
+      <aside class="callout-box quote" aria-label="The Game of Next-Word Prediction">
+        <div class="callout-title">The Game of Next-Word Prediction</div>
+        <p><em>"The quick brown fox jumps over the lazy ___"</em></p>
+        <p>The model takes a guess. If it guesses <em>"dog"</em>, the system rewards it. If it guesses <em>"sandwich"</em>, a small correction ripples through billions of internal mathematical dials (called <strong>weights</strong> or <strong>parameters</strong>).</p>
+      </aside>
+
+      <p>
+        When you repeat this exercise hundreds of billions of times across trillions of sentences, something remarkable happens. To accurately predict the next word across medical journals, Python scripts, legal briefs, and historical texts, the model cannot simply memorize words. It is forced to learn:
+      </p>
+      <ul>
+        <li><strong>Grammar and syntax:</strong> Verbs follow nouns; commas separate clauses.</li>
+        <li><strong>World facts:</strong> Paris is associated with France; boiling water is associated with 100&deg;C.</li>
+        <li><strong>Logic and common sense:</strong> If you drop a glass on concrete, words describing breaking are overwhelmingly more likely than words describing floating.</li>
+      </ul>
+
+      <h3>The limitation of a "Base Model"</h3>
+      <p>
+        At the end of pretraining, you possess what AI researchers call a <strong>Base Model</strong>. It has soaked up the knowledge of the internet, but it has no conversational manners.
+      </p>
+      <p>
+        If you open a chat window and ask a raw base model:
+      </p>
+      <div class="code-block"><pre><code>User: How do I bake sourdough bread?</code></pre></div>
+      <p>
+        A base model will often reply:
+      </p>
+      <div class="code-block"><pre><code>Model: User: What temperature should the oven be?
+User: How long does fermentation take?</code></pre></div>
+      <p>
+        Why? Because on the internet, questions are frequently followed by lists of other questions on FAQ pages! The base model isn't trying to help you; it is merely trying to complete a pattern.
+      </p>
+
+      <h2>Step 3: Supervised Fine-Tuning — Teaching the bookworm manners</h2>
+      <p>
+        To turn a raw autocomplete engine into an assistant, engineers use a process called <strong>Supervised Fine-Tuning (SFT)</strong>.
+      </p>
+      <p>
+        Instead of feeding the model random articles, we give it tens of thousands of carefully curated flashcards formatted as conversations:
+      </p>
+      <div class="code-block"><pre><code>&lt;|user|&gt;
+How do I bake sourdough bread?&lt;|endoftext|&gt;
+&lt;|assistant|&gt;
+To bake sourdough bread, you need three basic ingredients: flour, water, and an active starter...&lt;|endoftext|&gt;</code></pre></div>
+
+      <aside class="callout-box info" aria-label="Key Concept: Loss Masking">
+        <div class="callout-title">The Secret Trick: Loss Masking</div>
+        <p>In standard pretraining, the model is tested on every single word. But during conversation training, engineers apply a <strong>loss mask</strong>: the model is given a grade <em>only</em> on the words the assistant speaks. It is never graded on repeating the user's question back. This teaches the model to listen quietly and focus exclusively on generating the answer.</p>
+      </aside>
+
+      <p>
+        After SFT, the bookworm finally understands its social role: when addressed as an assistant, its job is to provide a helpful answer and stop talking.
+      </p>
+
+      <h2>Step 4: Preference Alignment — Thumbs up, thumbs down</h2>
+      <p>
+        Even after learning manners, an assistant can still be verbose, defensive, or prone to hallucinating facts. How do we teach it good taste?
+      </p>
+      <p>
+        Writing hundreds of thousands of perfect responses by hand is impossible. Instead, researchers use an idea inspired by sports coaching: <strong>Direct Preference Optimization (DPO)</strong>.
+      </p>
+      <p>
+        The model is given a prompt and asked to generate two candidate answers:
+      </p>
+      <ul>
+        <li><strong>Candidate A:</strong> A concise, accurate, and polite explanation.</li>
+        <li><strong>Candidate B:</strong> A rambling, confusing, or mildly inaccurate response.</li>
+      </ul>
+      <p>
+        A human (or an advanced judge model) clicks <strong>Thumbs Up</strong> on Candidate A and <strong>Thumbs Down</strong> on Candidate B.
+      </p>
+      <p>
+        The AI is gently tuned: increase the probability of generating sentences styled like Candidate A, and decrease the probability of answers shaped like Candidate B. Without having to write every word from scratch, the AI learns to adopt a helpful, balanced, and objective tone.
+      </p>
+
+      <h2>Step 5: The Reasoning Revolution — Thinking out loud</h2>
+      <p>
+        Until recently, LLMs answered every question with the same rapid-fire speed. Whether you asked <em>"What is the color of the sky?"</em> or <em>"Solve this Olympiad geometry problem,"</em> the model spent exactly the same amount of computation on each word: one forward mathematical pass.
+      </p>
+      <p>
+        Nobel laureate Daniel Kahneman famously described human thinking as divided into two modes:
+      </p>
+      <ul>
+        <li><strong>System 1 (Fast Thinking):</strong> Intuitive, automatic reactions (e.g. recognizing a friend's face or knowing that 2 + 2 = 4).</li>
+        <li><strong>System 2 (Slow Thinking):</strong> Deliberate, conscious calculation (e.g. multiplying 487 by 392 or planning a chess move three turns ahead).</li>
+      </ul>
+      <p>
+        If you ask a brilliant mathematician to multiply 487 by 392 in 0.1 seconds, they will guess incorrectly. But give them a scrap piece of paper, five seconds to carry the digits, and they will produce the correct answer every time.
+      </p>
+      <p>
+        This is the breakthrough behind modern reasoning models like <strong>DeepSeek-R1</strong> and <strong>OpenAI o1/o3</strong>.
+      </p>
+
+      <aside class="callout-box warning" aria-label="The Scratchpad Advantage">
+        <div class="callout-title">The Scratchpad Advantage (GRPO / RLVR)</div>
+        <p>Modern reasoning models are trained to emit a hidden scratchpad—wrapped in <code>&lt;think&gt; ... &lt;/think&gt;</code> tags—before outputting their final answer. Inside this scratchpad, the model tests hypotheses, discovers contradictions, crosses out bad ideas, and double-checks its arithmetic. The reinforcement learning algorithm rewards the model when its final answer is correct, naturally incentivizing it to think longer and harder on complex problems.</p>
+      </aside>
+
+      <p>
+        By giving the model "room to think" in token space, AI systems made a monumental leap: they transitioned from parroting facts to verifying their own logic.
+      </p>
+
+      <h2>Comparing the four training stages</h2>
+      <p>
+        To understand the full picture, here is how each stage transforms the model's data, objective, and observable behavior:
+      </p>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Training Stage</th>
+              <th>What Data It Sees</th>
+              <th>Core Learning Objective</th>
+              <th>How It Behaves</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Pretraining</strong></td>
+              <td>Trillions of raw internet text tokens</td>
+              <td>Predict the next word accurately</td>
+              <td>Raw autocomplete; knows facts but has no conversational etiquette</td>
+            </tr>
+            <tr>
+              <td><strong>2. SFT</strong></td>
+              <td>Thousands of curated Q&amp;A pairs</td>
+              <td>Predict only the assistant's answer (loss masking)</td>
+              <td>Polite assistant; answers questions directly</td>
+            </tr>
+            <tr>
+              <td><strong>3. DPO / Alignment</strong></td>
+              <td>Pairs of good vs. bad answers</td>
+              <td>Prefer helpful, safe, and concise style</td>
+              <td>Polished conversationalist; avoids dangerous or rambling answers</td>
+            </tr>
+            <tr>
+              <td><strong>4. Reasoning (GRPO)</strong></td>
+              <td>Math &amp; logic problems with verifiable answers</td>
+              <td>Reward self-correction inside <code>&lt;think&gt;</code> scratchpads</td>
+              <td>Deliberate problem solver; checks its work before answering</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Why this matters: moving beyond the hype</h2>
+      <p>
+        Demystifying how an LLM is built helps us see through two common traps: the dismissive claim that AI is *"just a stochastic parrot that knows nothing"* and the alarmist claim that AI is *"a conscious mind trapped in a server."*
+      </p>
+      <p>
+        The reality is more nuanced:
+      </p>
+      <ul>
+        <li><strong>Why hallucinations happen:</strong> Because the system was trained to guess what sounds statistically plausible, not what is factually verified. If a false fact fits the rhythm of the sentence, a base model will emit it without hesitation.</li>
+        <li><strong>Why reasoning models are more reliable:</strong> Because allowing models to write out scratchpads gives them the computational space to catch mistakes before printing their final answer.</li>
+        <li><strong>Why data quality is everything:</strong> You cannot train a wise model on foolish data. The leap from GPT-3 to modern reasoning agents was not driven by bigger supercomputers alone; it was driven by cleaner data curation, loss masking, and reinforcement learning.</li>
+      </ul>
+
+      <h2>Key takeaways</h2>
+      <ul>
+        <li><strong>Numbers, not words:</strong> Language models never see letters. Everything is converted into token numbers before processing.</li>
+        <li><strong>One trick, repeated:</strong> An LLM does not perform separate magical operations for coding, poetry, and logic. It only ever predicts the next token.</li>
+        <li><strong>Manners require training:</strong> Base models cannot chat. SFT and loss masking teach the model to act as a helpful partner.</li>
+        <li><strong>Thinking takes tokens:</strong> Reasoning models achieve high accuracy by generating an internal scratchpad to double-check their work before delivering a conclusion.</li>
+      </ul>
+
+      <div class="sources">
+        <h2>Sources for further reading</h2>
+        <ul>
+          <li><a href="https://github.com/FareedKhan-dev/train-llm-from-scratch" rel="noopener" target="_blank">Fareed Khan: train-llm-from-scratch (Hand-built PyTorch Implementation)</a></li>
+          <li><a href="https://arxiv.org/abs/1706.03762" rel="noopener" target="_blank">Vaswani et al. (2017): Attention Is All You Need (The Original Transformer Paper)</a></li>
+          <li><a href="https://arxiv.org/abs/2305.18290" rel="noopener" target="_blank">Rafailov et al. (2023): Direct Preference Optimization: Your Language Model is Secretly a Reward Model</a></li>
+          <li><a href="https://arxiv.org/abs/2501.12948" rel="noopener" target="_blank">DeepSeek AI (2025): DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</a></li>
+          <li><a href="https://arxiv.org/abs/1707.06347" rel="noopener" target="_blank">Schulman et al. (2017): Proximal Policy Optimization Algorithms (PPO)</a></li>
+        </ul>
+      </div>
+    </article>
+
+    <footer class="site-footer">
+      <span>&copy; 2026 mnk17arts</span>
+      <a href="../index.html">Back home</a>
+    </footer>
+  </main>
+</body>
+</html>
