@@ -1,5 +1,16 @@
 [
   {
+    "id": "how-llms-are-built",
+    "slug": "how-llms-are-built",
+    "title": "The Autocomplete That Learned to Think: How an LLM is Actually Built from Scratch",
+    "category": "Artificial Intelligence",
+    "date": "15 September 2026",
+    "readTime": "12 min",
+    "excerpt": "How turning text into numbers, guessing the next word, and providing an internal scratchpad turns raw statistics into modern reasoning AI.",
+    "url": "posts/how-llms-are-built.html",
+    "featured": true
+  },
+  {
     "id": "deletion-illusion",
     "slug": "deletion-illusion",
     "title": "The Illusion of Deletion: Why a 50GB File Vanishes in a Split Second",
@@ -8,7 +19,7 @@
     "readTime": "10 min",
     "excerpt": "Deleting a large file feels instant because the computer does not erase the data—it removes the map that says where it lives.",
     "url": "posts/deletion-illusion.html",
-    "featured": true
+    "featured": false
   },
   {
     "id": "ambient-iot",
