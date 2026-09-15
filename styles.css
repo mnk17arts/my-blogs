@@ -941,6 +941,17 @@ code:not(pre code) {
   align-items: center;
   gap: 5px;
   transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.diagram-play-btn svg {
+  width: 10px !important;
+  height: 10px !important;
+  min-width: 10px !important;
+  max-width: 10px !important;
+  display: inline-block !important;
+  fill: currentColor !important;
+  flex-shrink: 0 !important;
 }
 
 .diagram-play-btn:hover {
@@ -997,8 +1008,14 @@ code:not(pre code) {
   transition: background 0.25s ease, border-color 0.25s ease;
 }
 
-.post-diagram svg,
-.iot-diagram svg {
+.diagram-canvas {
+  width: 100%;
+  display: block;
+}
+
+.post-diagram > svg,
+.post-diagram .diagram-canvas > svg,
+.iot-diagram > svg {
   display: block;
   width: 100%;
   height: auto;
@@ -1319,18 +1336,33 @@ code:not(pre code) {
     -webkit-overflow-scrolling: touch;
   }
 
-  .post-diagram,
-  .iot-diagram {
+  .post-diagram {
     margin: 24px 0;
-    padding: 14px 10px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    padding: 14px 12px;
+    overflow: hidden;
   }
 
-  .post-diagram svg,
-  .iot-diagram svg {
+  .diagram-canvas {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    margin: 8px 0 10px;
+  }
+
+  .post-diagram > svg,
+  .diagram-canvas > svg,
+  .iot-diagram > svg {
     min-width: 480px;
     width: 100%;
+    height: auto;
+  }
+
+  .diagram-play-btn svg {
+    width: 10px !important;
+    height: 10px !important;
+    min-width: 10px !important;
+    max-width: 10px !important;
   }
 
   .sources {

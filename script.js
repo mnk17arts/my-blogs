@@ -554,8 +554,17 @@
    * Supports both manual step navigation and auto-cycle flow animation
    */
   function initDiagramSteppers() {
-    const diagrams = document.querySelectorAll('.post-diagram');
+    const diagrams = document.querySelectorAll('.post-diagram, .iot-diagram');
     diagrams.forEach((diagram) => {
+      // Ensure direct SVG child is wrapped in .diagram-canvas for smooth mobile scrolling
+      const svg = diagram.querySelector(':scope > svg');
+      if (svg) {
+        const canvas = document.createElement('div');
+        canvas.className = 'diagram-canvas';
+        diagram.insertBefore(canvas, svg);
+        canvas.appendChild(svg);
+      }
+
       const stepper = diagram.querySelector('.diagram-stepper');
       if (!stepper) return;
 
