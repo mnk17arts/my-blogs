@@ -1,5 +1,16 @@
 [
   {
+    "id": "webrtc-p2p-file-transfer",
+    "slug": "webrtc-p2p-file-transfer",
+    "title": "Zero-Server Delivery: How WebRTC Streams Gigabytes Directly Between Browsers",
+    "category": "Networking",
+    "date": "15 September 2026",
+    "readTime": "11 min",
+    "excerpt": "How WebRTC RTCDataChannel, NAT hole punching, SCTP over DTLS, and backpressure flow control enable browsers to stream multi-gigabyte files directly peer-to-peer.",
+    "url": "posts/webrtc-p2p-file-transfer.html",
+    "featured": true
+  },
+  {
     "id": "how-llms-are-built",
     "slug": "how-llms-are-built",
     "title": "The Autocomplete That Learned to Think: How an LLM is Actually Built from Scratch",
@@ -8,7 +19,7 @@
     "readTime": "12 min",
     "excerpt": "How turning text into numbers, guessing the next word, and providing an internal scratchpad turns raw statistics into modern reasoning AI.",
     "url": "posts/how-llms-are-built.html",
-    "featured": true
+    "featured": false
   },
   {
     "id": "deletion-illusion",

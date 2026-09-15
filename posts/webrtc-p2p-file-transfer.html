@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zero-Server Delivery: How WebRTC Streams Gigabytes Directly Between Browsers — F.Y.I.</title>
+  <meta name="description" content="How WebRTC RTCDataChannel, NAT hole punching, SCTP over DTLS, and backpressure flow control enable browsers to stream multi-gigabyte files directly peer-to-peer.">
+  <link rel="canonical" href="https://mnk17arts.github.io/my-blogs/posts/webrtc-p2p-file-transfer.html">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="stylesheet" href="../styles.css">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('fyi_theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <script defer src="../script.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <a class="brand" href="../index.html">F.Y.I. <span>Tech</span></a>
+    <div class="mobile-header-actions">
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    </div>
+  </header>
+
+  <!-- Sidebar Navigation (Categories auto-sync via script.js from posts.json) -->
+  <aside class="sidebar" id="site-nav">
+    <a class="brand desktop-brand" href="../index.html">F.Y.I. <span>Tech</span></a>
+    <p class="tagline">For your information — and future intelligence.</p>
+    <nav aria-label="Primary navigation">
+      <a class="nav-link" href="../index.html">Home</a>
+      <a class="nav-link" href="../about.html">About</a>
+      <p class="nav-label">Sections</p>
+      <div id="nav-sections">
+        <!-- Dynamically populated and highlighted by script.js -->
+      </div>
+      <a class="nav-link" href="../index.html#reading-list">Reading list</a>
+    </nav>
+
+    <div class="theme-toggle-row">
+      <span class="theme-toggle-label">Appearance</span>
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <span>Written by</span>
+      <strong>mnk17arts</strong>
+    </div>
+  </aside>
+
+  <!-- Main Article Content -->
+  <main id="main-content" class="content-wrap narrow">
+    <article class="post">
+      <div class="card-meta">
+        <span>Networking</span>
+        <span>15 September 2026 &middot; 11 min read</span>
+      </div>
+
+      <h1>Zero-Server Delivery: How WebRTC Streams Gigabytes Directly Between Browsers</h1>
+
+      <!-- Article Toolbar: Audio Reader & Share -->
+      <div class="article-toolbar">
+        <div class="audio-group" id="audio-group">
+          <button class="audio-play-btn" id="audio-play-btn" aria-label="Listen to this note">
+            <svg class="icon-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            <span id="audio-label">Listen (11 min)</span>
+          </button>
+          <div class="audio-controls" id="audio-controls">
+            <button class="audio-speed-btn" id="audio-speed-btn" title="Playback speed">1.0x</button>
+            <button class="audio-stop-btn" id="audio-stop-btn" title="Stop audio" aria-label="Stop audio">
+              <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"></rect></svg>
+            </button>
+            <span class="audio-status" id="audio-status">Playing...</span>
+          </div>
+        </div>
+        <div class="share-group">
+          <button class="share-btn" id="share-copy-btn" title="Copy link" aria-label="Share note">
+            <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            <span>Share</span>
+          </button>
+          <a class="share-icon-btn" id="share-x-btn" target="_blank" rel="noopener" title="Share on X" aria-label="Share on X">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+          </a>
+          <a class="share-icon-btn" id="share-li-btn" target="_blank" rel="noopener" title="Share on LinkedIn" aria-label="Share on LinkedIn">
+            <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
+          <div class="share-toast" id="share-toast">Link copied!</div>
+        </div>
+      </div>
+
+      <p class="lead">
+        If you send a 5GB video file to a colleague sitting opposite you in a coffee shop using Google Drive, Slack, or WeTransfer, those billions of bytes leave your laptop, travel hundreds of miles through undersea optical cables to a cloud data center, sit on an enterprise SSD, and journey back down. WebRTC's <code>RTCDataChannel</code> cuts out the middleman entirely, opening an encrypted, direct peer-to-peer highway between two browser tabs at the physical speed limit of the local link.
+      </p>
+
+      <h2>The absurdity of the centralized detour</h2>
+      <p>
+        For thirty years, web architecture has conditioned us to believe that browser-to-browser communication requires a central server acting as an omniscient switchboard. When Alice wants to send a file to Bob:
+      </p>
+      <ol>
+        <li>Alice establishes an HTTPS connection to an Amazon S3 or Google Cloud storage bucket.</li>
+        <li>Alice uploads the file, paying in egress bandwidth, encryption overhead, and cloud ingress limits.</li>
+        <li>The cloud server stores the file on disk, assumes legal and privacy custody of the bytes, and returns a shareable download URL.</li>
+        <li>Bob clicks the link, initiating a second multi-gigabyte transfer down to his machine.</li>
+      </ol>
+      <p>
+        This architecture makes sense for asynchronous distribution—like publishing a podcast to millions of listeners who download at different hours. But for point-to-point transfers between two active devices, it is astonishingly wasteful. It consumes double the network bandwidth, incurs cloud storage billing, creates persistent compliance liabilities (GDPR, HIPAA), and throttles transfer speeds to whatever egress cap the cloud provider enforces.
+      </p>
+      <p>
+        Web Real-Time Communication (WebRTC) was originally built to stream live audio and video between browsers. But tucked inside its specification is a far more versatile subsystem: <strong>RTCDataChannel</strong>. It enables browsers to exchange arbitrary binary payloads directly, peer-to-peer, with end-to-end encryption and zero intermediate storage.
+      </p>
+
+      <aside class="callout-box info" aria-label="Zero-Server Invariant">
+        <div class="callout-title">The Peer-to-Peer Invariant</div>
+        <p>
+          In a true WebRTC data channel transfer, not a single byte of the file payload ever touches a server disk or relay memory. The server only acts as a matchmaker to exchange network coordinates; once the direct peer-to-peer connection is established, the signaling server can be unplugged while multi-gigabyte transfers continue unimpeded.
+        </p>
+      </aside>
+
+      <h2>The chicken-and-egg problem: Signaling and SDP</h2>
+      <p>
+        If Alice and Bob want to connect directly, they face an immediate paradox: how do they find each other without a server if neither knows the other's IP address, port numbers, or cryptographic keys?
+      </p>
+      <p>
+        This is solved by a brief, lightweight pre-game handshake known as <strong>signaling</strong>. Signaling uses a tiny exchange of text strings formatted according to the <strong>Session Description Protocol (SDP)</strong>:
+      </p>
+      <ul>
+        <li><strong>The Offer:</strong> Alice's browser generates an SDP Offer. This is a text document detailing her supported transport protocols, DTLS cryptographic fingerprints, and requested data channels.</li>
+        <li><strong>The Matchmaker:</strong> Alice passes this string to Bob via any external medium. It could be an ephemeral WebSocket server, an HTTP POST request, a QR code scanned by a webcam, or even an encrypted email.</li>
+        <li><strong>The Answer:</strong> Bob's browser ingests Alice's offer, creates an SDP Answer specifying his matching security parameters, and returns it to Alice.</li>
+      </ul>
+      <p>
+        Crucially, the WebRTC specification intentionally does <em>not</em> define the signaling protocol. By decoupling signaling from the data channel itself, the browser leaves application developers free to use any delivery mechanism—from Redis Pub/Sub to paper slips.
+      </p>
+
+      <!-- Architecture Flow Diagram -->
+      <figure class="post-diagram" aria-labelledby="diagram-caption">
+        <svg viewBox="0 0 760 270" role="img" aria-label="WebRTC P2P connection architecture showing signaling, NAT hole punching, and direct data channel pipe">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <!-- Peer A (Sender) -->
+          <rect x="20" y="30" width="170" height="90" rx="8" class="diagram-box"/>
+          <text x="105" y="65" text-anchor="middle" class="diagram-title">Browser A (Sender)</text>
+          <text x="105" y="88" text-anchor="middle" class="diagram-label">Local IP: 192.168.1.15</text>
+          <text x="105" y="105" text-anchor="middle" class="diagram-note">RTCDataChannel</text>
+
+          <!-- Signaling Server (Top Center) -->
+          <rect x="290" y="15" width="180" height="60" rx="8" class="diagram-box"/>
+          <text x="380" y="42" text-anchor="middle" class="diagram-title">Signaling Server</text>
+          <text x="380" y="60" text-anchor="middle" class="diagram-label">Exchanges SDP &amp; ICE Only</text>
+
+          <!-- Peer B (Receiver) -->
+          <rect x="570" y="30" width="170" height="90" rx="8" class="diagram-box"/>
+          <text x="655" y="65" text-anchor="middle" class="diagram-title">Browser B (Receiver)</text>
+          <text x="655" y="88" text-anchor="middle" class="diagram-label">Local IP: 10.0.0.82</text>
+          <text x="655" y="105" text-anchor="middle" class="diagram-note">RTCDataChannel</text>
+
+          <!-- Signaling lines (dashed) -->
+          <path d="M 190 60 Q 240 45 290 45" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4" fill="none" marker-end="url(#arrow)"/>
+          <path d="M 470 45 Q 520 45 570 60" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4" fill="none" marker-end="url(#arrow)"/>
+          <text x="235" y="35" font-size="11" fill="var(--muted)">1. SDP Offer</text>
+          <text x="525" y="35" font-size="11" fill="var(--muted)">2. SDP Answer</text>
+
+          <!-- NAT / STUN Layer (Middle) -->
+          <rect x="250" y="105" width="260" height="42" rx="6" class="diagram-box"/>
+          <text x="380" y="125" text-anchor="middle" class="diagram-title">STUN Server &amp; NAT Discovery</text>
+          <text x="380" y="139" text-anchor="middle" class="diagram-label">Discovers Public IP &amp; Port Pinholes</text>
+
+          <path d="M 105 120 V 160 H 250" stroke="var(--diagram-stroke)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+          <path d="M 655 120 V 160 H 510" stroke="var(--diagram-stroke)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+          <!-- Direct P2P Channel (Bottom) -->
+          <rect x="60" y="185" width="640" height="65" rx="8" class="diagram-box diagram-focus"/>
+          <text x="380" y="212" text-anchor="middle" class="diagram-title">Direct P2P Data Pipe (No Server Middleman)</text>
+          <text x="380" y="234" text-anchor="middle" class="diagram-label">Encrypted SCTP over DTLS over UDP &middot; 64 KB Chunks Streaming at Line Speed</text>
+
+          <!-- Direct Connection Arrows -->
+          <path d="M 105 120 V 185" stroke="var(--accent)" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+          <path d="M 655 120 V 185" stroke="var(--accent)" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+        </svg>
+        <figcaption id="diagram-caption">Figure 1: The 3 phases of a WebRTC direct file transfer: lightweight signaling, STUN NAT discovery, and the direct encrypted peer-to-peer data highway.</figcaption>
+      </figure>
+
+      <h2>The Great Wall of NAT: STUN, TURN, and Hole Punching</h2>
+      <p>
+        Knowing each other's security parameters is not enough. Almost every device on the internet sits behind a home Wi-Fi router, cellular carrier, or corporate firewall using <strong>Network Address Translation (NAT)</strong>.
+      </p>
+      <p>
+        Your computer might think its IP address is <code>192.168.1.15</code>, but that address is purely private to your living room. The outside world knows you only by your router's single public IPv4 address (e.g. <code>203.0.113.45</code>). Furthermore, home routers operate on a strict security rule: they discard any unsolicited inbound UDP/TCP packet arriving from the internet unless a local device recently sent an outbound packet to that exact remote IP.
+      </p>
+      <p>
+        To crack this wall, WebRTC deploys the <strong>Interactive Connectivity Establishment (ICE)</strong> framework, leveraging two complementary helper protocols:
+      </p>
+
+      <h3>1. STUN: The digital mirror</h3>
+      <p>
+        A <strong>STUN (Session Traversal Utilities for NAT)</strong> server is a lightweight reflector that sits on the public internet. Alice's browser sends a tiny UDP ping to the STUN server. The STUN server looks at the packet header and replies: <em>"From my vantage point, your public IP is 203.0.113.45 and your router opened port 52140 for this conversation."</em>
+      </p>
+      <p>
+        Alice now has a <em>server-reflexive candidate</em>. She bundles this address into an ICE candidate and sends it to Bob through the signaling channel.
+      </p>
+
+      <h3>2. UDP Hole Punching</h3>
+      <p>
+        Now comes the magic trick:
+      </p>
+      <ol>
+        <li>Alice fires a UDP packet directly toward Bob's public IP and port (<code>198.51.100.22:41090</code>). Bob's firewall initially drops this packet because it didn't solicit it. But crucially, Alice's router notes: <em>"Alice sent outbound traffic to Bob's port. Keep this pinhole open for incoming replies!"</em></li>
+        <li>Simultaneously, Bob fires a UDP packet toward Alice's public IP and port (<code>203.0.113.45:52140</code>).</li>
+        <li>When Bob's packet reaches Alice's router, her router recognizes the destination as matching the pinhole Alice just created, and lets the packet pass through to her machine!</li>
+      </ol>
+      <p>
+        A direct, bidirectional UDP tunnel has been punched through two independent firewalls across the globe, without configuring a single port-forwarding rule.
+      </p>
+
+      <h3>3. TURN: The fallback of last resort</h3>
+      <p>
+        In approximately 10% to 15% of connections—particularly behind symmetric enterprise firewalls or strict cellular NATs—routers assign a different pseudo-random public port for every single outbound destination. In this scenario, UDP hole punching fails.
+      </p>
+      <p>
+        When ICE exhausts direct candidate pairs, it falls back to <strong>TURN (Traversal Using Relays around NAT)</strong>. A TURN server acts as an encrypted relay proxy, passing packets between Alice and Bob. While TURN requires relay bandwidth, it ensures a 100% connection success rate when direct peering is physically blocked by network topology.
+      </p>
+
+      <h2>Beneath the hood: Why SCTP over DTLS?</h2>
+      <p>
+        WebRTC data channels do not use TCP. Instead, they run <strong>SCTP (Stream Control Transmission Protocol, RFC 8831)</strong> layered on top of <strong>DTLS (Datagram Transport Layer Security)</strong>, running on raw UDP packets.
+      </p>
+      <p>
+        Why did the designers of WebRTC avoid standard TCP? The answer is <strong>head-of-line blocking</strong>:
+      </p>
+      <p>
+        Under TCP, data is treated as an unbroken byte stream. If packet #4 is dropped in transit due to Wi-Fi jitter, packets #5 through #50 cannot be delivered to the application, even though they arrived safely. The operating system's TCP stack halts delivery until packet #4 is retransmitted and acknowledged.
+      </p>
+      <p>
+        SCTP solves this by introducing <strong>independent multi-streaming and message framing</strong>:
+      </p>
+      <ul>
+        <li>You can stream a file over Stream 0 with guaranteed ordered delivery.</li>
+        <li>Simultaneously, you can transmit real-time mouse positions or voice metadata over Stream 1 in an unordered, unreliable mode.</li>
+        <li>A dropped packet in the video file transfer will never block or delay the delivery of the real-time control packets.</li>
+      </ul>
+      <p>
+        Meanwhile, DTLS provides the exact same TLS 1.3 cryptographic guarantees (Diffie-Hellman key exchange, AES-256-GCM symmetric encryption) that secure online banking, guaranteeing that even an attacker with physical access to the fiber line cannot inspect or tamper with the file chunks.
+      </p>
+
+      <!-- Comparison Table -->
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Architecture</th>
+              <th>Bandwidth Cost</th>
+              <th>Latency / Speed</th>
+              <th>Privacy &amp; Custody</th>
+              <th>NAT Penetration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Cloud Storage (S3 / Drive)</strong></td>
+              <td>2&times; transfer (Ingress + Egress billing)</td>
+              <td>High (Round-trip to remote data center)</td>
+              <td>Server holds persistent plaintext copies</td>
+              <td>100% (Outbound HTTPS client-to-server)</td>
+            </tr>
+            <tr>
+              <td><strong>WebSocket Relay Server</strong></td>
+              <td>2&times; real-time payload relay</td>
+              <td>Medium (Bounces through server memory)</td>
+              <td>Server inspects payload unless custom E2EE</td>
+              <td>100% (Standard HTTPS/WSS port 443)</td>
+            </tr>
+            <tr>
+              <td><strong>WebRTC RTCDataChannel (P2P)</strong></td>
+              <td><strong>0&times; (Zero server bandwidth)</strong></td>
+              <td><strong>Lowest (Direct line speed / LAN speeds)</strong></td>
+              <td><strong>True E2EE (DTLS; server sees zero bytes)</strong></td>
+              <td>85–90% Direct STUN; 100% with TURN relay</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>The 64KB trap: Backpressure and browser blowups</h2>
+      <p>
+        When software engineers first build a WebRTC file transfer tool, they almost invariably make the same rookie mistake. They select a 4GB file using an <code>&lt;input type="file"&gt;</code> element, break it into chunks, and blast them into the data channel with a simple JavaScript loop:
+      </p>
+
+      <div class="code-block">
+        <pre><code>// ❌ THE FATAL ROOKIE MISTAKE: Causes instant out-of-memory crashes!
+const file = fileInput.files[0];
+const CHUNK_SIZE = 64 * 1024; // 64 KB
+
+for (let offset = 0; offset &lt; file.size; offset += CHUNK_SIZE) {
+  const slice = file.slice(offset, offset + CHUNK_SIZE);
+  const buffer = await slice.arrayBuffer();
+  dataChannel.send(buffer); // 💥 Browser memory explodes here!
+}</code></pre>
+      </div>
+
+      <p>
+        In less than two seconds, the browser tab freezes, memory consumption spikes to 4GB+, and Chrome crashes with <code>Aw, Snap! Error code: Out of Memory</code>.
+      </p>
+      <p>
+        Why does this happen? The JavaScript execution thread runs in milliseconds, but physical radio hardware (Wi-Fi or 5G) can only push bits at 50–200 megabits per second. When you invoke <code>dataChannel.send()</code>, you are not sending bytes over the wire—you are merely queuing them into the browser's internal C++ SCTP transmission buffer.
+      </p>
+      <p>
+        Without <strong>backpressure</strong>, JavaScript dumps all 4 gigabytes into RAM faster than the network card can drain it.
+      </p>
+
+      <aside class="callout-box warning" aria-label="Bufferbloat Warning">
+        <div class="callout-title">The Backpressure Rule</div>
+        <p>
+          Never read or queue chunks faster than the underlying socket can transmit them. In high-performance systems engineering, producers must always be throttled by consumer throughput. In WebRTC, the browser provides this throttle via the <code>bufferedAmount</code> property and the <code>bufferedamountlow</code> event.
+        </p>
+      </aside>
+
+      <h3>The correct pattern: Pumping with `bufferedamountlow`</h3>
+      <p>
+        To transfer files of arbitrary size (from 10MB to 50GB) with a fixed, razor-thin memory footprint of just 2 megabytes, you must implement cooperative flow control:
+      </p>
+      <ol>
+        <li>Set a low-water mark on the data channel: <code>dataChannel.bufferedAmountLowThreshold = 65536;</code> (64KB).</li>
+        <li>Set an upper limit (e.g. 1MB or 2MB) on queued bytes.</li>
+        <li>Read and transmit chunks from disk via <code>file.slice()</code> until <code>dataChannel.bufferedAmount</code> reaches the limit.</li>
+        <li>Pause the read loop and put JavaScript to sleep.</li>
+        <li>When the operating system network stack drains the buffer below 64KB, the browser fires the <code>bufferedamountlow</code> event, waking your loop to fetch the next slice.</li>
+      </ol>
+
+      <div class="code-block">
+        <pre><code>// ✅ PRODUCTION-GRADE STREAMING: Handles 50GB+ files with ~2MB RAM footprint
+async function streamFileP2P(file, dataChannel) {
+  const CHUNK_SIZE = 64 * 1024; // 64 KB per chunk (RFC optimal)
+  const MAX_BUFFER = 1024 * 1024; // 1 MB queue ceiling
+  dataChannel.bufferedAmountLowThreshold = CHUNK_SIZE;
+
+  let offset = 0;
+
+  function sendNextBatch() {
+    // Fill the buffer up to MAX_BUFFER, then yield control
+    while (offset &lt; file.size &amp;&amp; dataChannel.bufferedAmount &lt; MAX_BUFFER) {
+      const slice = file.slice(offset, offset + CHUNK_SIZE);
+      slice.arrayBuffer().then((buffer) =&gt; {
+        dataChannel.send(buffer);
+      });
+      offset += CHUNK_SIZE;
+    }
+
+    if (offset &gt;= file.size) {
+      console.log('Transfer complete: All bytes queued to network stack.');
+    }
+  }
+
+  // Refill loop: Fires only when the socket has drained the buffer
+  dataChannel.onbufferedamountlow = () =&gt; {
+    if (offset &lt; file.size) {
+      sendNextBatch();
+    }
+  };
+
+  // Kick off initial pump
+  sendNextBatch();
+}</code></pre>
+      </div>
+
+      <h2>Why this matters for modern software systems</h2>
+      <p>
+        Mastering direct peer-to-peer data channels changes the economic and architectural calculus of web applications:
+      </p>
+
+      <h3>1. Zero-cost infrastructure scaling</h3>
+      <p>
+        In traditional SaaS, every active user transferring data increases your monthly AWS egress bill (often costing $0.05 to $0.09 per gigabyte). Applications like <strong>Snapdrop</strong>, <strong>PairDrop</strong>, and <strong>Wormhole</strong> transfer terabytes of data daily while running on $5-a-month VPS servers that only handle JSON signaling strings.
+      </p>
+
+      <h3>2. Absolute privacy and data sovereignty</h3>
+      <p>
+        Because the payload travels through a DTLS-encrypted direct tunnel, neither the signaling provider, the ISP, nor an intermediate CDN can inspect, index, or leak the files. There are no access tokens, no S3 bucket permissions to misconfigure, and no stored customer data subject to government subpoenas or data breaches.
+      </p>
+
+      <h3>3. Blazing local-area performance</h3>
+      <p>
+        When two machines connect over the same office or home Wi-Fi network, WebRTC's ICE framework discovers the local subnet candidate (e.g. <code>192.168.1.15 &rarr; 192.168.1.42</code>). Traffic never leaves the local switch, transferring files at full gigabit LAN speeds (100MB/s+) without consuming a single bit of external internet bandwidth.
+      </p>
+
+      <h2>Key takeaways</h2>
+      <ul>
+        <li><strong>Signaling is decoupled:</strong> WebRTC requires an external matchmaker to swap SDP offers and ICE candidates, but never dictates how signaling occurs.</li>
+        <li><strong>NAT hole punching enables direct pipes:</strong> STUN discovers public reflexive IP/port mappings, allowing synchronized UDP pings to establish direct firewall pinholes in 85–90% of connections.</li>
+        <li><strong>SCTP delivers reliability without head-of-line blocking:</strong> Multiplexed streams and message boundaries give data channels the speed of UDP with the reliability of TCP.</li>
+        <li><strong>Backpressure is non-negotiable:</strong> Large file transfers must monitor <code>dataChannel.bufferedAmount</code> and use the <code>bufferedamountlow</code> event to avoid fatal browser out-of-memory crashes.</li>
+      </ul>
+
+      <!-- Primary Sources and Specifications -->
+      <section class="sources" aria-label="Primary Sources and Standards">
+        <h2>Primary sources &amp; specifications</h2>
+        <ul>
+          <li>
+            <a href="https://datatracker.ietf.org/doc/html/rfc8831" target="_blank" rel="noopener">RFC 8831</a> &mdash; <em>WebRTC Data Channels</em>, IETF (R. Jesup, S. Loreto, M. Tüxen).
+          </li>
+          <li>
+            <a href="https://datatracker.ietf.org/doc/html/rfc8832" target="_blank" rel="noopener">RFC 8832</a> &mdash; <em>WebRTC Data Channel Establishment Protocol (DCEP)</em>, IETF (M. Tüxen, R. Stewart, R. Jesup, S. Loreto).
+          </li>
+          <li>
+            <a href="https://datatracker.ietf.org/doc/html/rfc8445" target="_blank" rel="noopener">RFC 8445</a> &mdash; <em>Interactive Connectivity Establishment (ICE): A Protocol for Network Address Translator (NAT) Traversal</em>, IETF.
+          </li>
+          <li>
+            <a href="https://datatracker.ietf.org/doc/html/rfc5389" target="_blank" rel="noopener">RFC 5389</a> &mdash; <em>Session Traversal Utilities for NAT (STUN)</em>, IETF.
+          </li>
+          <li>
+            <a href="https://datatracker.ietf.org/doc/html/rfc8656" target="_blank" rel="noopener">RFC 8656</a> &mdash; <em>Traversal Using Relays around NAT (TURN): Relay Extensions to STUN</em>, IETF.
+          </li>
+          <li>
+            <a href="https://www.w3.org/TR/webrtc/" target="_blank" rel="noopener">W3C WebRTC 1.0</a> &mdash; <em>Real-Time Communication Between Browsers</em>, W3C Recommendation.
+          </li>
+        </ul>
+      </section>
+
+      <!-- Site Footer -->
+      <footer class="site-footer">
+        <div>&copy; 2026 F.Y.I. &middot; Published by mnk17arts</div>
+        <div>
+          <a href="../index.html">Home</a> &middot;
+          <a href="../about.html">About</a> &middot;
+          <a href="../index.html#reading-list">Reading list</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>
