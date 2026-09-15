@@ -7,6 +7,28 @@
   <meta name="description" content="How turning text into numbers, guessing the next word, and providing an internal scratchpad turns raw statistics into modern reasoning AI.">
   <link rel="canonical" href="https://mnk17arts.github.io/my-blogs/posts/how-llms-are-built.html">
   <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+  <!-- OpenGraph Social Metadata -->
+  <meta property="og:site_name" content="F.Y.I.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="The Autocomplete That Learned to Think: How an LLM is Actually Built from Scratch">
+  <meta property="og:description" content="How turning text into numbers, guessing the next word, and providing an internal scratchpad turns raw statistics into modern reasoning AI.">
+  <meta property="og:url" content="https://mnk17arts.github.io/my-blogs/posts/how-llms-are-built.html">
+  <meta property="og:image" content="https://mnk17arts.github.io/my-blogs/assets/og-cover.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="675">
+  <meta property="og:image:alt" content="How LLMs Are Built Architecture">
+
+  <!-- Twitter / X Card Metadata -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Autocomplete That Learned to Think: How an LLM is Actually Built from Scratch">
+  <meta name="twitter:description" content="How turning text into numbers, guessing the next word, and providing an internal scratchpad turns raw statistics into modern reasoning AI.">
+  <meta name="twitter:image" content="https://mnk17arts.github.io/my-blogs/assets/og-cover.jpg">
+
+  <!-- Theme & Browser Color -->
+  <meta name="theme-color" content="#2c6e57" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1412" media="(prefers-color-scheme: dark)">
+
   <link rel="stylesheet" href="../styles.css">
   <script>
     (function() {
@@ -128,8 +150,21 @@
         How did a system designed to guess the next word learn to write poetry, debug software, and reason through complex mathematical proofs? The secret lies in a four-stage training journey that transforms raw internet text into a structured reasoning engine.
       </p>
 
-      <!-- SVG Pipeline Diagram -->
-      <figure class="post-diagram" aria-labelledby="llm-pipeline-caption">
+      <!-- SVG Pipeline Diagram with Interactive Flow Stepper -->
+      <figure class="post-diagram" data-active-step="all" aria-labelledby="llm-pipeline-caption">
+        <div class="diagram-stepper">
+          <button class="diagram-play-btn" title="Auto-cycle through pipeline stages">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span>Play Flow</span>
+          </button>
+          <button class="diagram-step-pill active" data-target-step="all" data-desc="Complete 4-stage pipeline showing the evolution from raw internet text into reasoning AI.">All Stages</button>
+          <button class="diagram-step-pill" data-target-step="1" data-desc="Stage 1: Pretraining. The model reads trillions of words playing fill-in-the-blank to build a raw Base Model.">1. Pretraining</button>
+          <button class="diagram-step-pill" data-target-step="2" data-desc="Stage 2: Supervised Fine-Tuning. High-quality Q&amp;A cards teach conversational etiquette, producing an Assistant Model.">2. SFT</button>
+          <button class="diagram-step-pill" data-target-step="3" data-desc="Stage 3: Preference Alignment (DPO). Thumbs up/down comparisons train the model on tone, safety, and conciseness.">3. Alignment</button>
+          <button class="diagram-step-pill" data-target-step="4" data-desc="Stage 4: Reasoning (GRPO / RLVR). An internal &lt;think&gt; scratchpad lets the model verify logic before outputting answers.">4. Reasoning</button>
+        </div>
+        <div class="diagram-step-caption" data-default="Interactive pipeline: Click any stage pill above or press Play Flow to explore the 4 training milestones in sequence.">Interactive pipeline: Click any stage pill above or press Play Flow to explore the 4 training milestones in sequence.</div>
+
         <svg viewBox="0 0 760 260" role="img" aria-label="The 4-stage pipeline from raw text to a reasoning model">
           <defs>
             <marker id="flow-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -138,42 +173,50 @@
           </defs>
 
           <!-- Stage 1 -->
-          <rect x="15" y="45" width="165" height="160" rx="10" class="diagram-box"/>
-          <text x="97" y="78" text-anchor="middle" class="diagram-title">1. Pretraining</text>
-          <text x="97" y="105" text-anchor="middle" class="diagram-label">Trillions of words</text>
-          <text x="97" y="128" text-anchor="middle" class="diagram-label">Fill-in-the-blank</text>
-          <rect x="25" y="145" width="145" height="38" rx="6" fill="#eaf1ed" stroke="#b9ccc1"/>
-          <text x="97" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#2c6e57">Base Model</text>
+          <g data-step="1">
+            <rect x="15" y="45" width="165" height="160" rx="10" class="diagram-box" data-step="1"/>
+            <text x="97" y="78" text-anchor="middle" class="diagram-title">1. Pretraining</text>
+            <text x="97" y="105" text-anchor="middle" class="diagram-label">Trillions of words</text>
+            <text x="97" y="128" text-anchor="middle" class="diagram-label">Fill-in-the-blank</text>
+            <rect x="25" y="145" width="145" height="38" rx="6" fill="#eaf1ed" stroke="#b9ccc1"/>
+            <text x="97" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#2c6e57">Base Model</text>
+          </g>
 
-          <path d="M 183 125 H 202" stroke="#2c6e57" stroke-width="2" marker-end="url(#flow-arrow)"/>
+          <path d="M 183 125 H 202" stroke="#2c6e57" stroke-width="2" class="flow-line" marker-end="url(#flow-arrow)"/>
 
           <!-- Stage 2 -->
-          <rect x="204" y="45" width="165" height="160" rx="10" class="diagram-box"/>
-          <text x="286" y="78" text-anchor="middle" class="diagram-title">2. SFT (Manners)</text>
-          <text x="286" y="105" text-anchor="middle" class="diagram-label">Curated Q&amp;A cards</text>
-          <text x="286" y="128" text-anchor="middle" class="diagram-label">Loss masking trick</text>
-          <rect x="214" y="145" width="145" height="38" rx="6" fill="#eaf1ed" stroke="#b9ccc1"/>
-          <text x="286" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#2c6e57">Assistant Model</text>
+          <g data-step="2">
+            <rect x="204" y="45" width="165" height="160" rx="10" class="diagram-box" data-step="2"/>
+            <text x="286" y="78" text-anchor="middle" class="diagram-title">2. SFT (Manners)</text>
+            <text x="286" y="105" text-anchor="middle" class="diagram-label">Curated Q&amp;A cards</text>
+            <text x="286" y="128" text-anchor="middle" class="diagram-label">Loss masking trick</text>
+            <rect x="214" y="145" width="145" height="38" rx="6" fill="#eaf1ed" stroke="#b9ccc1"/>
+            <text x="286" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#2c6e57">Assistant Model</text>
+          </g>
 
-          <path d="M 372 125 H 391" stroke="#2c6e57" stroke-width="2" marker-end="url(#flow-arrow)"/>
+          <path d="M 372 125 H 391" stroke="#2c6e57" stroke-width="2" class="flow-line" marker-end="url(#flow-arrow)"/>
 
           <!-- Stage 3 -->
-          <rect x="393" y="45" width="165" height="160" rx="10" class="diagram-box"/>
-          <text x="475" y="78" text-anchor="middle" class="diagram-title">3. Alignment (DPO)</text>
-          <text x="475" y="105" text-anchor="middle" class="diagram-label">Thumbs up vs down</text>
-          <text x="475" y="128" text-anchor="middle" class="diagram-label">Coaching tone &amp; safety</text>
-          <rect x="403" y="145" width="145" height="38" rx="6" fill="#eaf1ed" stroke="#b9ccc1"/>
-          <text x="475" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#2c6e57">Polished Chatbot</text>
+          <g data-step="3">
+            <rect x="393" y="45" width="165" height="160" rx="10" class="diagram-box" data-step="3"/>
+            <text x="475" y="78" text-anchor="middle" class="diagram-title">3. Alignment (DPO)</text>
+            <text x="475" y="105" text-anchor="middle" class="diagram-label">Thumbs up vs down</text>
+            <text x="475" y="128" text-anchor="middle" class="diagram-label">Coaching tone &amp; safety</text>
+            <rect x="403" y="145" width="145" height="38" rx="6" fill="#eaf1ed" stroke="#b9ccc1"/>
+            <text x="475" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#2c6e57">Polished Chatbot</text>
+          </g>
 
-          <path d="M 561 125 H 580" stroke="#2c6e57" stroke-width="2" marker-end="url(#flow-arrow)"/>
+          <path d="M 561 125 H 580" stroke="#2c6e57" stroke-width="2" class="flow-line" marker-end="url(#flow-arrow)"/>
 
           <!-- Stage 4 -->
-          <rect x="582" y="45" width="165" height="160" rx="10" class="diagram-box diagram-focus"/>
-          <text x="664" y="78" text-anchor="middle" class="diagram-title">4. Reasoning (GRPO)</text>
-          <text x="664" y="105" text-anchor="middle" class="diagram-label">Internal scratchpad</text>
-          <text x="664" y="128" text-anchor="middle" class="diagram-label">&lt;think&gt; verification</text>
-          <rect x="592" y="145" width="145" height="38" rx="6" fill="#2c6e57"/>
-          <text x="664" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">Reasoning Model</text>
+          <g data-step="4">
+            <rect x="582" y="45" width="165" height="160" rx="10" class="diagram-box diagram-focus" data-step="4"/>
+            <text x="664" y="78" text-anchor="middle" class="diagram-title">4. Reasoning (GRPO)</text>
+            <text x="664" y="105" text-anchor="middle" class="diagram-label">Internal scratchpad</text>
+            <text x="664" y="128" text-anchor="middle" class="diagram-label">&lt;think&gt; verification</text>
+            <rect x="592" y="145" width="145" height="38" rx="6" fill="#2c6e57"/>
+            <text x="664" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">Reasoning Model</text>
+          </g>
         </svg>
         <figcaption id="llm-pipeline-caption">Figure 1: The four-stage evolution from raw internet text to a modern reasoning model.</figcaption>
       </figure>
