@@ -2,3 +2,5 @@ README.pvt.md
 *.code-workspace
 posts/template-post.html
 LocalTracker.md
+LocalTracker/
+AGENTS.md

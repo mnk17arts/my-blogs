@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0e1512"/>
+      <stop offset="60%" stop-color="#141f1a"/>
+      <stop offset="100%" stop-color="#1b2e26"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#48b890"/>
+      <stop offset="100%" stop-color="#2c6e57"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#17221d"/>
+      <stop offset="100%" stop-color="#111a15"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Dark Emerald Canvas Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+
+  <!-- Subtle Architectural Grid Elements -->
+  <g opacity="0.08" stroke="#ffffff" stroke-width="1">
+    <line x1="120" y1="0" x2="120" y2="630"/>
+    <line x1="1080" y1="0" x2="1080" y2="630"/>
+    <line x1="0" y1="100" x2="1200" y2="100"/>
+    <line x1="0" y1="530" x2="1200" y2="530"/>
+  </g>
+
+  <!-- Glowing Accent Glow -->
+  <circle cx="1000" cy="180" r="300" fill="#2c6e57" opacity="0.25" filter="blur(80px)"/>
+
+  <!-- Brand Logo Monogram -->
+  <rect x="120" y="100" width="68" height="68" rx="16" fill="url(#accentGrad)"/>
+  <text x="154" y="146" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="34" font-weight="800" fill="#ffffff" text-anchor="middle">F.</text>
+
+  <!-- Brand Wordmark -->
+  <text x="210" y="145" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="36" font-weight="800" fill="#e6ece8" letter-spacing="-1">F.Y.I. <tspan fill="#48b890">Tech</tspan></text>
+
+  <!-- Tagline Eyebrow -->
+  <text x="120" y="240" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="#48b890" letter-spacing="3" text-transform="uppercase">Notes on Technology &amp; Systems</text>
+
+  <!-- Main Headline -->
+  <text x="120" y="320" font-family="'Newsreader', Georgia, serif" font-size="58" font-weight="500" fill="#ffffff" letter-spacing="-1.5">For your information &mdash;</text>
+  <text x="120" y="390" font-family="'Newsreader', Georgia, serif" font-size="58" font-weight="500" fill="#48b890" letter-spacing="-1.5">and future intelligence.</text>
+
+  <!-- Supporting Subtitle -->
+  <text x="120" y="460" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="400" fill="#95a59c">Deconstructing computer architecture, distributed systems, and modern AI.</text>
+
+  <!-- Footer Link -->
+  <rect x="120" y="506" width="380" height="42" rx="21" fill="url(#cardGrad)" stroke="#2b3c33" stroke-width="1.5"/>
+  <circle cx="146" cy="527" r="6" fill="#48b890"/>
+  <text x="166" y="534" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600" fill="#e6ece8">mnk17arts.github.io/my-blogs</text>
+</svg>

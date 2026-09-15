@@ -803,19 +803,188 @@ code:not(pre code) {
   margin: 32px 0;
   background: var(--code-bg);
   color: var(--code-text);
-  padding: 20px 24px;
-  border-radius: 6px;
-  overflow-x: auto;
+  border-radius: 8px;
+  overflow: hidden;
   border: 1px solid var(--line);
+  box-shadow: var(--shadow);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.88rem;
-  line-height: 1.6;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  user-select: none;
+}
+
+.code-lang {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.code-copy-btn {
+  background: transparent;
+  color: var(--code-text);
+  opacity: 0.75;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 3px 9px;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.code-copy-btn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.code-copy-btn svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.code-copy-btn.copied {
+  opacity: 1;
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(44, 110, 87, 0.2);
 }
 
 .code-block pre {
   margin: 0;
+  padding: 18px 22px;
+  overflow-x: auto;
   font-family: inherit;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  -webkit-overflow-scrolling: touch;
 }
+
+/* Animated Flowing SVG Dashes */
+.flow-line {
+  stroke-dasharray: 6 6;
+  animation: flowDashes 1.4s linear infinite;
+}
+
+@keyframes flowDashes {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+/* Interactive Diagram Stepper & Flow Highlighting */
+.diagram-stepper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.diagram-step-pill {
+  background: var(--card-bg);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 4px 11px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.diagram-step-pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.diagram-step-pill.active {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+.diagram-play-btn {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--line);
+  padding: 4px 11px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.diagram-play-btn:hover {
+  border-color: var(--accent);
+}
+
+.diagram-step-caption {
+  margin: 12px 0 4px;
+  padding: 9px 14px;
+  background: var(--card-bg);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.8rem;
+  color: var(--ink);
+  line-height: 1.45;
+  transition: all 0.25s ease;
+}
+
+/* SVG Step spotlighting & dimming */
+.post-diagram[data-active-step] [data-step] {
+  opacity: 0.22;
+  transition: opacity 0.3s ease, stroke 0.3s ease, filter 0.3s ease;
+}
+
+.post-diagram[data-active-step="all"] [data-step] {
+  opacity: 1;
+}
+
+.post-diagram[data-active-step="1"] [data-step="1"],
+.post-diagram[data-active-step="2"] [data-step="2"],
+.post-diagram[data-active-step="3"] [data-step="3"],
+.post-diagram[data-active-step="4"] [data-step="4"] {
+  opacity: 1 !important;
+}
+
+.post-diagram[data-active-step="1"] rect[data-step="1"],
+.post-diagram[data-active-step="2"] rect[data-step="2"],
+.post-diagram[data-active-step="3"] rect[data-step="3"],
+.post-diagram[data-active-step="4"] rect[data-step="4"] {
+  stroke: var(--accent) !important;
+  stroke-width: 2.5px !important;
+  filter: drop-shadow(0 0 6px var(--accent-soft));
+}
+
 
 /* Post & IoT Diagram Framework */
 .post-diagram,
@@ -889,8 +1058,37 @@ code:not(pre code) {
   font-size: 1.4rem;
 }
 
+/* UI-Friendly Anchor Tags in Articles & Sources */
+.post a,
+.page-article a,
 .sources a {
   color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--diagram-stroke);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  transition: all 0.2s ease;
+}
+
+.post a:hover,
+.page-article a:hover,
+.sources a:hover {
+  color: var(--ink);
+  text-decoration-color: var(--accent);
+}
+
+[data-theme="dark"] .post a,
+[data-theme="dark"] .page-article a,
+[data-theme="dark"] .sources a {
+  color: #5cdbb0;
+  text-decoration-color: rgba(92, 219, 176, 0.4);
+}
+
+[data-theme="dark"] .post a:hover,
+[data-theme="dark"] .page-article a:hover,
+[data-theme="dark"] .sources a:hover {
+  color: #ffffff;
+  text-decoration-color: #5cdbb0;
 }
 
 /* Mobile Header & Responsive Breakpoints */

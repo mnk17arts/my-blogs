@@ -81,6 +81,12 @@
     initArticleToolbar(article);
   }
 
+  // 4. Code Blocks Enhancement: Auto Language Badge & Copy Button
+  initCodeBlocks();
+
+  // 5. Interactive Diagram Steppers & Flow Controllers
+  initDiagramSteppers();
+
   /**
    * In-Browser Audio Player (SpeechSynthesis) & Share Controls
    */
@@ -473,6 +479,168 @@
     }
 
     renderRecentList();
+  }
+
+  /**
+   * Code Blocks Enhancement: Language badge & One-click Copy Button
+   * Automatically enriches every .code-block on the page
+   */
+  function initCodeBlocks() {
+    const codeBlocks = document.querySelectorAll('.code-block');
+    codeBlocks.forEach((block) => {
+      if (block.querySelector('.code-header')) return; // Already initialized
+
+      let lang = block.getAttribute('data-lang');
+      if (!lang) {
+        const codeEl = block.querySelector('code');
+        if (codeEl) {
+          const match = codeEl.className.match(/(?:language-|lang-)(\w+)/i);
+          if (match) {
+            lang = match[1].toUpperCase();
+          } else {
+            // Infer language from contents
+            const text = codeEl.textContent.trim();
+            if (text.includes('function') || text.includes('const') || text.includes('let') || text.includes('=>') || text.includes('console.log')) {
+              lang = 'JavaScript';
+            } else if (text.includes('def ') || (text.includes('import ') && text.includes(':'))) {
+              lang = 'Python';
+            } else if (text.startsWith('<') && text.includes('>')) {
+              lang = 'HTML';
+            } else if (text.includes('curl ') || text.includes('git ') || text.includes('npm ') || text.includes('python -m')) {
+              lang = 'Bash';
+            } else {
+              lang = 'Code';
+            }
+          }
+        } else {
+          lang = 'Code';
+        }
+      }
+
+      const header = document.createElement('div');
+      header.className = 'code-header';
+      header.innerHTML = `
+        <span class="code-lang">${escapeHtml(lang)}</span>
+        <button class="code-copy-btn" title="Copy code to clipboard" aria-label="Copy code">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span class="copy-label">Copy</span>
+        </button>
+      `;
+
+      const copyBtn = header.querySelector('.code-copy-btn');
+      const copyLabel = header.querySelector('.copy-label');
+      copyBtn.addEventListener('click', async () => {
+        const preCode = block.querySelector('pre code') || block.querySelector('pre');
+        const textToCopy = preCode ? preCode.textContent : block.textContent;
+        try {
+          await navigator.clipboard.writeText(textToCopy);
+          copyBtn.classList.add('copied');
+          copyLabel.textContent = 'Copied!';
+          setTimeout(() => {
+            copyBtn.classList.remove('copied');
+            copyLabel.textContent = 'Copy';
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy code to clipboard:', err);
+        }
+      });
+
+      block.prepend(header);
+    });
+  }
+
+  /**
+   * Interactive Diagram Stepper & Flow Visualizer
+   * Supports both manual step navigation and auto-cycle flow animation
+   */
+  function initDiagramSteppers() {
+    const diagrams = document.querySelectorAll('.post-diagram');
+    diagrams.forEach((diagram) => {
+      const stepper = diagram.querySelector('.diagram-stepper');
+      if (!stepper) return;
+
+      const pills = stepper.querySelectorAll('.diagram-step-pill');
+      const playBtn = stepper.querySelector('.diagram-play-btn');
+      const captionBox = diagram.querySelector('.diagram-step-caption');
+
+      let timer = null;
+      let isPlaying = false;
+      const stepList = Array.from(pills).map((p) => p.getAttribute('data-target-step'));
+
+      function activateStep(stepVal) {
+        diagram.setAttribute('data-active-step', stepVal);
+
+        pills.forEach((p) => {
+          if (p.getAttribute('data-target-step') === stepVal) {
+            p.classList.add('active');
+            const desc = p.getAttribute('data-desc');
+            if (captionBox && desc) {
+              captionBox.textContent = desc;
+              captionBox.style.display = 'block';
+            } else if (captionBox && stepVal === 'all') {
+              const defaultDesc = captionBox.getAttribute('data-default') || '';
+              captionBox.textContent = defaultDesc;
+            }
+          } else {
+            p.classList.remove('active');
+          }
+        });
+      }
+
+      pills.forEach((pill) => {
+        pill.addEventListener('click', () => {
+          stopPlay();
+          activateStep(pill.getAttribute('data-target-step'));
+        });
+      });
+
+      function stopPlay() {
+        if (timer) {
+          clearInterval(timer);
+          timer = null;
+        }
+        isPlaying = false;
+        if (playBtn) {
+          playBtn.innerHTML = `
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span>Play Flow</span>
+          `;
+        }
+      }
+
+      function startPlay() {
+        isPlaying = true;
+        if (playBtn) {
+          playBtn.innerHTML = `
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            <span>Pause</span>
+          `;
+        }
+
+        const numericSteps = stepList.filter((s) => s !== 'all');
+        let stepIdx = 0;
+        activateStep(numericSteps[stepIdx]);
+
+        timer = setInterval(() => {
+          stepIdx = (stepIdx + 1) % (numericSteps.length + 1);
+          if (stepIdx === numericSteps.length) {
+            activateStep('all');
+          } else {
+            activateStep(numericSteps[stepIdx]);
+          }
+        }, 2500);
+      }
+
+      if (playBtn) {
+        playBtn.addEventListener('click', () => {
+          if (isPlaying) {
+            stopPlay();
+          } else {
+            startPlay();
+          }
+        });
+      }
+    });
   }
 
   function escapeHtml(str) {
